@@ -33,9 +33,15 @@ namespace DarkSouls.Animation
 
         public void StopRotation()
         {
+            //dev note: i'm assuming that we're not using Get or Setter properties because the animator will need to access these functions?
+            //if thats not the case, this should be cleaned up and turned into a CanRotate property with get/set
             _canRotate = false;
         }
 
+        /// <summary>
+        /// Gets a value indicating if the player in his current animation state may rotate.
+        /// </summary>
+        /// <returns></returns>
         public bool CanRotate() => _canRotate;
 
         private float GetNormalizedMovement(float movement)

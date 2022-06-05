@@ -18,8 +18,8 @@ namespace DarkSouls.Locomotion.Player
         private Rigidbody _rigidBody;
         private GameObject _normalCamera;  //free look camera
 
-        [Header("Stats")] [SerializeField] private float MovementSpeed = 5;
-        [SerializeField] private float rotationSpeed = 10; //souls is very fast rotation
+        [Header("Stats")] [SerializeField] [Tooltip("How fast the player moves")] private float movementSpeed = 5;
+        [SerializeField] [Tooltip("How quickly the player can rotate")] private float rotationSpeed = 10; //souls is very fast rotation
 
         void Start()
         {
@@ -46,14 +46,13 @@ namespace DarkSouls.Locomotion.Player
             _moveDirection += _mainCamera.right * _inputHandler.horizontal;
             _moveDirection.Normalize();
 
-            _moveDirection *= MovementSpeed;
+            _moveDirection *= movementSpeed;
             _rigidBody.velocity = Vector3.ProjectOnPlane(_moveDirection, _normalVector);
         }
 
         private void HandleRotation(float deltaTime)
         {
             var targetVector = Vector3.zero;
-            var movementOverride = _inputHandler.moveAmount;
 
             targetVector = _mainCamera.forward * _inputHandler.vertical;
             targetVector += _mainCamera.right * _inputHandler.horizontal;
