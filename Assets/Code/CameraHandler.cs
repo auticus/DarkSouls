@@ -1,4 +1,5 @@
-﻿using DarkSouls.Input;
+﻿using System;
+using DarkSouls.Input;
 using UnityEngine;
 
 namespace DarkSouls
@@ -13,10 +14,16 @@ namespace DarkSouls
         [SerializeField] private float pivotSpeed = 0.015f; //dampens mouse sensitivity up and down
         [SerializeField] private float minimumPivot = -35;
         [SerializeField] private float maximumPivot = 35;
+        [SerializeField] private float cameraSphereRadius = 0.2f;
+        [SerializeField] private float cameraCollisionOffset = 0.2f;
+        [SerializeField] private float minimumCollisionOffset = 0.2f;
+        [SerializeField] private float cameraCollisionCorrectionDampening = 0.2f;
 
         private Transform _myTransform;
+        private float _targetPosition;
         private InputHandler _inputHandler;
         private Vector3 _cameraTransformPosition;
+        private Vector3 _cameraFollowVelocity;
         private LayerMask _ignoreLayers;  //used for collision
         private float _defaultPosition;
         private float _lookAngle;
@@ -26,7 +33,8 @@ namespace DarkSouls
         {
             _myTransform = transform;
             _defaultPosition = cameraTransform.localPosition.z;
-            _ignoreLayers = ~(1 << 8 | 1 << 9 | 1 << 10); //ignore everything not in 8, 9, or 10? (check out the layers that are created in this proj)
+            _ignoreLayers = ~(1 << 8 | 1 << 9 | 1 << 10); //ignore everything in 8, 9, or 10? (check out the layers that are created in this proj)
+            //Camera rig and pivot are in layer 10 - Controller as is the player
 
             var gameController = GameObject.FindGameObjectWithTag("GameController");
             _inputHandler = gameController.GetComponent<InputHandler>();
@@ -44,8 +52,19 @@ namespace DarkSouls
         public void FollowTarget(float deltaTime)
         {
             //causes the camera to follow the target transform.position (our player)
-            var targetPosition = Vector3.Lerp(_myTransform.position, targetTransform.position, deltaTime / followSpeed);
+            
+            //OLD CODE for reference on how not to do things
+            //var targetPosition = Vector3.Lerp(_myTransform.position, targetTransform.position, deltaTime / followSpeed);
+
+            //Use smoothDamp over Lerp to remove jittery (docs confirm this is the right way to go as well)
+            var targetPosition = Vector3.SmoothDamp(
+                _myTransform.position,
+                targetTransform.position,
+                ref _cameraFollowVelocity,
+                deltaTime / followSpeed);
+
             _myTransform.position = targetPosition;
+            HandleCameraCollisions(deltaTime);
         }
 
         public void HandleCameraRotation(float deltaTime)
@@ -67,6 +86,40 @@ namespace DarkSouls
 
             targetRotation = Quaternion.Euler(rotation);
             cameraPivotTransform.localRotation = targetRotation;
+        }
+
+        private void HandleCameraCollisions(float deltaTime)
+        {
+            //Current issue with this is that while it does work some of the time, often it just wants to zoom in super close to the character
+            //which is not good.  Needs to limit how far it wants to zoom in
+
+            _targetPosition = _defaultPosition;
+            var direction = cameraTransform.position - cameraPivotTransform.position;
+            direction.Normalize();
+
+            //Casts a sphere along a ray and returns info on what was hit.  Useful if you want to find out if an object of a specific zie, such as a character,
+            //will be able to move somewhere without colliding with anything on the way.  Its like a "thick raycast".
+            if (Physics.SphereCast(
+                    cameraPivotTransform.position, 
+                    cameraSphereRadius, 
+                    direction, 
+                    out var hit,
+                    Mathf.Abs(_targetPosition), 
+                    _ignoreLayers))
+            {
+                var distance = Vector3.Distance(cameraPivotTransform.position, hit.point);
+                _targetPosition = -(distance - cameraCollisionOffset);
+            }
+
+            if (Mathf.Abs(_targetPosition) < minimumCollisionOffset)
+            {
+                _targetPosition = -minimumCollisionOffset;
+            }
+
+            //once again should use smooth damp instead of lerp
+            _cameraTransformPosition.z = Mathf.Lerp(cameraTransform.localPosition.z, _targetPosition,
+                deltaTime / cameraCollisionCorrectionDampening);
+            cameraTransform.localPosition = _cameraTransformPosition;
         }
     }
 }

@@ -21,7 +21,6 @@ namespace DarkSouls.Animation
         {
             var vertical = GetNormalizedMovement(verticalMovement);
             var horizontal = GetNormalizedMovement(horizontalMovement);
-            Debug.Log($"Vertical = {vertical} :: Horizontal ={horizontal}");
             _animator.SetFloat(_verticalHash, vertical, ANIMATION_DAMPING_TIME, Time.deltaTime);
             _animator.SetFloat(_horizontalHash, horizontal, ANIMATION_DAMPING_TIME, Time.deltaTime);
         }

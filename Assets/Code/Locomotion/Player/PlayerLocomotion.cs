@@ -28,9 +28,7 @@ namespace DarkSouls.Locomotion.Player
             _mainCamera = Camera.main.transform;
             _playerTransform = transform;
             _animationHandler.Initialize();
-
-            var gameController = GameObject.FindGameObjectWithTag("GameController");
-            _inputHandler = gameController.GetComponent<InputHandler>();
+            _inputHandler = GetComponent<InputHandler>();
         }
 
         void Update()
@@ -40,13 +38,13 @@ namespace DarkSouls.Locomotion.Player
 
             //handle movement used to be here but is physics based
 
-            _animationHandler.UpdateAnimatorValues(_inputHandler.moveAmount, 0);
+            _animationHandler.UpdateAnimatorValues(_inputHandler.totalMoveAmount, 0);
             if (_animationHandler.CanRotate()) HandleRotation(deltaTime);
         }
 
         void FixedUpdate()
         {
-            //deviation - HandleMovement is in FixedUpdate here instead of Update
+            //deviation - HandleMovement is in FixedUpdate here instead of Update because it deals with the rigidbody and physics
             HandleMovement();
         }
 

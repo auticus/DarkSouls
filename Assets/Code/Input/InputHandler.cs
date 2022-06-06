@@ -6,7 +6,7 @@ namespace DarkSouls.Input
     {
         public float horizontalMovement;
         public float verticalMovement;
-        public float moveAmount;
+        public float totalMoveAmount;
         public float mouseX;
         public float mouseY;
 
@@ -38,7 +38,7 @@ namespace DarkSouls.Input
         {
             horizontalMovement = movementInput.x;
             verticalMovement = movementInput.y;
-            moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalMovement) + Mathf.Abs(verticalMovement));
+            totalMoveAmount = Mathf.Clamp01(Mathf.Abs(horizontalMovement) + Mathf.Abs(verticalMovement));
             mouseX = cameraInput.x;
             mouseY = cameraInput.y;
         }
