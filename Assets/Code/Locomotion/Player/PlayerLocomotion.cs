@@ -24,26 +24,36 @@ namespace DarkSouls.Locomotion.Player
         void Start()
         {
             _rigidBody = GetComponent<Rigidbody>();
-            _inputHandler = GetComponent<InputHandler>();
             _animationHandler = GetComponentInChildren<AnimationHandler>();
             _mainCamera = Camera.main.transform;
             _playerTransform = transform;
             _animationHandler.Initialize();
+
+            var gameController = GameObject.FindGameObjectWithTag("GameController");
+            _inputHandler = gameController.GetComponent<InputHandler>();
         }
 
         void Update()
         {
             var deltaTime = Time.deltaTime;
             _inputHandler.Tick(deltaTime);
-            HandleMovement();
+
+            //handle movement used to be here but is physics based
+
             _animationHandler.UpdateAnimatorValues(_inputHandler.moveAmount, 0);
             if (_animationHandler.CanRotate()) HandleRotation(deltaTime);
         }
 
+        void FixedUpdate()
+        {
+            //deviation - HandleMovement is in FixedUpdate here instead of Update
+            HandleMovement();
+        }
+
         private void HandleMovement()
         {
-            _moveDirection = _mainCamera.forward * _inputHandler.vertical;
-            _moveDirection += _mainCamera.right * _inputHandler.horizontal;
+            _moveDirection = _mainCamera.forward * _inputHandler.verticalMovement;
+            _moveDirection += _mainCamera.right * _inputHandler.horizontalMovement;
             _moveDirection.Normalize();
             _moveDirection.y = 0; //we don't want him moving up or down right now
 
@@ -55,8 +65,8 @@ namespace DarkSouls.Locomotion.Player
         {
             var targetVector = Vector3.zero;
 
-            targetVector = _mainCamera.forward * _inputHandler.vertical;
-            targetVector += _mainCamera.right * _inputHandler.horizontal;
+            targetVector = _mainCamera.forward * _inputHandler.verticalMovement;
+            targetVector += _mainCamera.right * _inputHandler.horizontalMovement;
 
             targetVector.Normalize();
             targetVector.y = 0;  //don't care about the y - dont allow it to change

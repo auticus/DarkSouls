@@ -44279,7 +44279,6 @@ GameObject:
   - component: {fileID: 3150583110280533154}
   - component: {fileID: 6666941114434807446}
   - component: {fileID: 4830839913021900416}
-  - component: {fileID: 45207198544974158}
   - component: {fileID: 685054494877594491}
   m_Layer: 0
   m_Name: Knight
@@ -44355,23 +44354,6 @@ CapsuleCollider:
   m_Height: 1.7
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &45207198544974158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3092354701724142612}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d732766483635949bfb422c5d81173d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  horizontal: 0
-  vertical: 0
-  moveAmount: 0
-  mouseX: 0
-  mouseY: 0
 --- !u!114 &685054494877594491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44384,7 +44366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 245d42b90517c0344b3f6d45a9849c70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MovementSpeed: 5
+  movementSpeed: 5
   rotationSpeed: 10
 --- !u!1 &3092355786841598692
 GameObject:

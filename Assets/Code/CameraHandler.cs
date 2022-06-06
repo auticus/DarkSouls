@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DarkSouls.Input;
+using UnityEngine;
 
 namespace DarkSouls
 {
@@ -7,15 +8,14 @@ namespace DarkSouls
         [SerializeField] private Transform targetTransform; //what we follow
         [SerializeField] private Transform cameraTransform; //the camera itself
         [SerializeField] private Transform cameraPivotTransform; //how the camera turns on a swivel - how it rotates - it rotates around this
-        [SerializeField] private float lookSpeed = 0.1f;
+        [SerializeField] private float lookSpeed = 0.015f; //dampens the mouse sensitivity left and right
         [SerializeField] private float followSpeed = 0.1f;
-        [SerializeField] private float pivotSpeed = 0.03f;
+        [SerializeField] private float pivotSpeed = 0.015f; //dampens mouse sensitivity up and down
         [SerializeField] private float minimumPivot = -35;
         [SerializeField] private float maximumPivot = 35;
 
-        public static CameraHandler thisCameraHandler;
-
         private Transform _myTransform;
+        private InputHandler _inputHandler;
         private Vector3 _cameraTransformPosition;
         private LayerMask _ignoreLayers;  //used for collision
         private float _defaultPosition;
@@ -24,10 +24,21 @@ namespace DarkSouls
 
         private void Awake()
         {
-            thisCameraHandler = this;
             _myTransform = transform;
             _defaultPosition = cameraTransform.localPosition.z;
             _ignoreLayers = ~(1 << 8 | 1 << 9 | 1 << 10); //ignore everything not in 8, 9, or 10? (check out the layers that are created in this proj)
+
+            var gameController = GameObject.FindGameObjectWithTag("GameController");
+            _inputHandler = gameController.GetComponent<InputHandler>();
+        }
+
+        private void LateUpdate()
+        {
+            //putting rotation in fixedupdate makes things choppy
+            //putting it in update makes it super fast
+            var deltaTime = Time.fixedDeltaTime;
+            FollowTarget(deltaTime);
+            HandleCameraRotation(deltaTime);
         }
 
         public void FollowTarget(float deltaTime)
@@ -37,8 +48,11 @@ namespace DarkSouls
             _myTransform.position = targetPosition;
         }
 
-        public void HandleCameraRotation(float deltaTime, float mouseInputX, float mouseInputY)
+        public void HandleCameraRotation(float deltaTime)
         {
+            var mouseInputX = _inputHandler.mouseX;
+            var mouseInputY = _inputHandler.mouseY;
+
             _lookAngle += (mouseInputX * lookSpeed) / deltaTime;
             _pivotAngle -= (mouseInputY * pivotSpeed) / deltaTime;
             _pivotAngle = Mathf.Clamp(_pivotAngle, minimumPivot, maximumPivot);

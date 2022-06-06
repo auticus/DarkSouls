@@ -4,33 +4,15 @@ namespace DarkSouls.Input
 {
     public class InputHandler : MonoBehaviour
     {
-        public float horizontal;
-        public float vertical;
+        public float horizontalMovement;
+        public float verticalMovement;
         public float moveAmount;
         public float mouseX;
         public float mouseY;
 
         private PlayerControls inputActions;
-        private CameraHandler cameraHandler;
         private Vector2 movementInput;
         private Vector2 cameraInput;
-
-        private void Awake()
-        {
-            cameraHandler = CameraHandler.thisCameraHandler;
-        }
-
-        private void Update()
-        {
-            //putting rotation in fixedupdate makes things choppy
-            //putting it in update makes it super fast
-            var deltaTime = Time.fixedDeltaTime;
-            if (cameraHandler != null)
-            {
-                cameraHandler.FollowTarget(deltaTime);
-                cameraHandler.HandleCameraRotation(deltaTime, mouseX, mouseY);
-            }
-        }
 
         private void OnEnable()
         {
@@ -48,14 +30,15 @@ namespace DarkSouls.Input
 
         public void Tick(float deltaTime)
         {
-            MoveInput(deltaTime);
+            //keeping this for now as the calling script can keep the delta time standard across everything
+            GetMoveInput(deltaTime);
         }
 
-        private void MoveInput(float deltaTime)
+        private void GetMoveInput(float deltaTime)
         {
-            horizontal = movementInput.x;
-            vertical = movementInput.y;
-            moveAmount = Mathf.Clamp01(Mathf.Abs(horizontal) + Mathf.Abs(vertical));
+            horizontalMovement = movementInput.x;
+            verticalMovement = movementInput.y;
+            moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalMovement) + Mathf.Abs(verticalMovement));
             mouseX = cameraInput.x;
             mouseY = cameraInput.y;
         }
