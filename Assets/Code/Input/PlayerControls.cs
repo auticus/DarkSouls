@@ -120,7 +120,7 @@ namespace DarkSouls.Input
                     ""id"": ""992dfc38-9a00-4c2c-8505-51e05eaf3554"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
-                    ""processors"": ""NormalizeVector2"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Camera"",
                     ""isComposite"": false,

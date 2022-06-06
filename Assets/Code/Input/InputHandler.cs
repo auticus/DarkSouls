@@ -11,8 +11,26 @@ namespace DarkSouls.Input
         public float mouseY;
 
         private PlayerControls inputActions;
+        private CameraHandler cameraHandler;
         private Vector2 movementInput;
         private Vector2 cameraInput;
+
+        private void Awake()
+        {
+            cameraHandler = CameraHandler.thisCameraHandler;
+        }
+
+        private void Update()
+        {
+            //putting rotation in fixedupdate makes things choppy
+            //putting it in update makes it super fast
+            var deltaTime = Time.fixedDeltaTime;
+            if (cameraHandler != null)
+            {
+                cameraHandler.FollowTarget(deltaTime);
+                cameraHandler.HandleCameraRotation(deltaTime, mouseX, mouseY);
+            }
+        }
 
         private void OnEnable()
         {

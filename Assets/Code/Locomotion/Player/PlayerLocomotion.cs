@@ -45,6 +45,7 @@ namespace DarkSouls.Locomotion.Player
             _moveDirection = _mainCamera.forward * _inputHandler.vertical;
             _moveDirection += _mainCamera.right * _inputHandler.horizontal;
             _moveDirection.Normalize();
+            _moveDirection.y = 0; //we don't want him moving up or down right now
 
             _moveDirection *= movementSpeed;
             _rigidBody.velocity = Vector3.ProjectOnPlane(_moveDirection, _normalVector);
