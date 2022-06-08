@@ -1,46 +1,53 @@
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace DarkSouls.Input
 {
-    public class InputHandler : MonoBehaviour
+    public class InputHandler : MonoBehaviour, PlayerControls.IPlayerMovementActions, PlayerControls.IPlayerActionsActions
     {
-        public float horizontalMovement;
-        public float verticalMovement;
-        public float totalMoveAmount;
-        public float mouseX;
-        public float mouseY;
+        /// <summary>
+        /// Gets a value indicating the movement on the X and Y axis of the gamepad or keyboard.
+        /// </summary>
+        public Vector2 MovementInput { get; private set; }
 
-        private PlayerControls inputActions;
-        private Vector2 movementInput;
-        private Vector2 cameraInput;
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action OnInputRoll;
 
-        private void OnEnable()
+        private PlayerControls _inputActions;
+        
+        private void Start()
         {
-            if (inputActions == null) inputActions = new PlayerControls();
-            inputActions.PlayerMovement.Movement.performed += inputActions => movementInput = inputActions.ReadValue<Vector2>();
-            inputActions.PlayerMovement.Camera.performed += i => cameraInput = i.ReadValue<Vector2>();
+            _inputActions = new PlayerControls();
+            _inputActions.PlayerActions.SetCallbacks(this);
+            _inputActions.PlayerMovement.SetCallbacks(this);
 
-            inputActions.Enable();
+            _inputActions.PlayerActions.Enable();
+            _inputActions.PlayerMovement.Enable();
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
-            inputActions.Disable();
+            _inputActions.PlayerActions.Disable();
+            _inputActions.PlayerMovement.Disable();
         }
 
-        public void Tick(float deltaTime)
+        public void OnMovement(InputAction.CallbackContext context)
         {
-            //keeping this for now as the calling script can keep the delta time standard across everything
-            GetMoveInput(deltaTime);
+            MovementInput = context.action.ReadValue<Vector2>();
         }
 
-        private void GetMoveInput(float deltaTime)
+        public void OnCamera(InputAction.CallbackContext context)
         {
-            horizontalMovement = movementInput.x;
-            verticalMovement = movementInput.y;
-            totalMoveAmount = Mathf.Clamp01(Mathf.Abs(horizontalMovement) + Mathf.Abs(verticalMovement));
-            mouseX = cameraInput.x;
-            mouseY = cameraInput.y;
+            //Cinemachine is handling all of these, we just put this in here to make the interface happy
+        }
+
+        public void OnRoll(InputAction.CallbackContext context)
+        {
+            if (!context.performed) return;
+            OnInputRoll?.Invoke();
         }
     }
 }

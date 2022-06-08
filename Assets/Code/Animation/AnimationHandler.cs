@@ -6,10 +6,13 @@ namespace DarkSouls.Animation
     {
         private readonly int _verticalHash = Animator.StringToHash("Vertical");
         private int _horizontalHash = Animator.StringToHash("Horizontal");
+        private int _isInteractingHash = Animator.StringToHash("isInteracting");
+
         private Animator _animator;
         private bool _canRotate = true;
-
+        
         private const float ANIMATION_DAMPING_TIME = 0.1f;
+        private const float ANIMATION_CROSSFADE_DAMPING = 0.2f;
 
         public void Initialize()
         {
@@ -17,12 +20,29 @@ namespace DarkSouls.Animation
             _animator = GetComponent<Animator>();
         }
 
-        public void UpdateAnimatorValues(float verticalMovement, float horizontalMovement)
+        public void UpdateFreelookMovementAnimation(Vector2 movementInput)
         {
-            var vertical = GetNormalizedMovement(verticalMovement);
-            var horizontal = GetNormalizedMovement(horizontalMovement);
-            _animator.SetFloat(_verticalHash, vertical, ANIMATION_DAMPING_TIME, Time.deltaTime);
-            _animator.SetFloat(_horizontalHash, horizontal, ANIMATION_DAMPING_TIME, Time.deltaTime);
+            // examine the x and y movement and add them together and pass that sum as the vertical value to the animator
+            // horizontal for free look will be currently hard coded to zero
+
+            var vertical = Mathf.Abs(GetNormalizedMovement(movementInput.y));
+            var horizontal = Mathf.Abs(GetNormalizedMovement(movementInput.x));
+
+            var totalMovement = Mathf.Clamp01(vertical + horizontal);
+            _animator.SetFloat(_verticalHash, totalMovement, ANIMATION_DAMPING_TIME, Time.deltaTime);
+            _animator.SetFloat(_horizontalHash, 0, ANIMATION_DAMPING_TIME, Time.deltaTime);
+        }
+
+        /// <summary>
+        /// Plays the given animation.
+        /// </summary>
+        /// <param name="animation">The animation to play.</param>
+        /// <param name="isInteracting">If TRUE will lock the animator down until cleared so that no other movement can interrupt.</param>
+        public void PlayTargetAnimation(string animation, bool isInteracting)
+        {
+            _animator.applyRootMotion = isInteracting;
+            _animator.SetBool(_isInteractingHash, isInteracting);
+            _animator.CrossFade(animation, ANIMATION_CROSSFADE_DAMPING);
         }
 
         public void StartRotation()

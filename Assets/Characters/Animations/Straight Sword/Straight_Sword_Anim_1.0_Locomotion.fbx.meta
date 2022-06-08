@@ -1,0 +1,207 @@
+fileFormatVersion: 2
+guid: 700baf5a5a1af2f488d21c5e168a86bb
+ModelImporter:
+  serializedVersion: 21202
+  internalIDToNameTable:
+  - first:
+      74: -1650623876575826116
+    second: Core_OH_Sprint_F_01_rootM
+  - first:
+      74: -6833178373325573696
+    second: Core_OH_Run_F_01_rootM
+  - first:
+      74: 6423147695630285900
+    second: Core_OH_Run_FL_01_rootM
+  - first:
+      74: 1175238861931870556
+    second: Core_OH_Run_L_01_rootM
+  - first:
+      74: 6657471127650802555
+    second: Core_OH_Run_BL_01_rootM
+  - first:
+      74: -517782688235292392
+    second: Core_OH_Run_B_01_rootM
+  - first:
+      74: -943800857461652088
+    second: Core_OH_Run_BR_01_rootM
+  - first:
+      74: -2160857492978203510
+    second: Core_OH_Run_R_01_rootM
+  - first:
+      74: 4095878515519292984
+    second: Core_OH_Run_FR_01_rootM
+  - first:
+      74: 3548331453627554004
+    second: Core_OH_Walk_F_01_rootM
+  - first:
+      74: 7863725731847563027
+    second: Core_OH_Walk_FL_01_rootM
+  - first:
+      74: 1679894509423602493
+    second: Core_OH_Walk_L_01_rootM
+  - first:
+      74: 4724083092791779380
+    second: Core_OH_Walk_BL_01_rootM
+  - first:
+      74: -712974671133617074
+    second: Core_OH_Walk_B_01_rootM
+  - first:
+      74: 2095533768186945066
+    second: Core_OH_Walk_BR_01_rootM
+  - first:
+      74: -1456540951179041611
+    second: Core_OH_Walk_R_01_rootM
+  - first:
+      74: 4320031838087732905
+    second: Core_OH_Walk_FR_01_rootM
+  - first:
+      74: -1486214097873503502
+    second: Core_TH_Sprint_F_01_rootM
+  - first:
+      74: 4958514688938946475
+    second: Core_TH_Run_F_01_rootM
+  - first:
+      74: 130172190362212062
+    second: Core_TH_Run_FL_01_rootM
+  - first:
+      74: 6456976213800665105
+    second: Core_TH_Run_L_01_rootM
+  - first:
+      74: 4407366615362062957
+    second: Core_TH_Run_BL_01_rootM
+  - first:
+      74: 7612590094389416318
+    second: Core_TH_Run_B_01_rootM
+  - first:
+      74: 681338699454982020
+    second: Core_TH_Run_BR_01_rootM
+  - first:
+      74: 3463352899229606913
+    second: Core_TH_Run_R_01_rootM
+  - first:
+      74: -4437290658114292056
+    second: Core_TH_Run_FR_01_rootM
+  - first:
+      74: 6850553584393612737
+    second: Core_TH_Walk_F_01_rootM
+  - first:
+      74: 1658872865567067324
+    second: Core_TH_Walk_FL_01_rootM
+  - first:
+      74: -6244490977014349895
+    second: Core_TH_Walk_L_01_rootM
+  - first:
+      74: 6656903020951129886
+    second: Core_TH_Walk_BL_01_rootM
+  - first:
+      74: -8647403278970535302
+    second: Core_TH_Walk_B_01_rootM
+  - first:
+      74: -773163183071487577
+    second: Core_TH_Walk_BR_01_rootM
+  - first:
+      74: -4528243451676686137
+    second: Core_TH_Walk_R_01_rootM
+  - first:
+      74: 4987854279151198271
+    second: Core_TH_Walk_FR_01_rootM
+  externalObjects: {}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 1
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
