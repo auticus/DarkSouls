@@ -10,6 +10,7 @@ namespace DarkSouls.Input
         /// Gets a value indicating the movement on the X and Y axis of the gamepad or keyboard.
         /// </summary>
         public Vector2 MovementInput { get; private set; }
+        public bool RollButtonPressed { get; private set; }
 
         /// <summary>
         /// 
@@ -46,8 +47,16 @@ namespace DarkSouls.Input
 
         public void OnRoll(InputAction.CallbackContext context)
         {
-            if (!context.performed) return;
-            OnInputRoll?.Invoke();
+            if (context.performed)
+            {
+                RollButtonPressed = true;
+                OnInputRoll?.Invoke();
+            }
+
+            if (context.canceled)
+            {
+                RollButtonPressed = false;
+            }
         }
     }
 }

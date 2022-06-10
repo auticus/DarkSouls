@@ -1,34 +1,38 @@
-﻿using UnityEngine;
+﻿using DarkSouls.Locomotion.Player;
+using UnityEngine;
 
 namespace DarkSouls.Animation
 {
     public class AnimationHandler : MonoBehaviour
     {
+        public const string ROLLING_ANIMATION = "Rolling";
+        public const string BACKSTEP_ANIMATION = "Backstep";
+
         private readonly int _verticalHash = Animator.StringToHash("Vertical");
         private int _horizontalHash = Animator.StringToHash("Horizontal");
         private int _isInteractingHash = Animator.StringToHash("isInteracting");
 
         private Animator _animator;
+        private Rigidbody _playerBody;
         private bool _canRotate = true;
         
         private const float ANIMATION_DAMPING_TIME = 0.1f;
         private const float ANIMATION_CROSSFADE_DAMPING = 0.2f;
 
+        /// <summary>
+        /// Gets a value indicating if the animator is in an animation state that cannot be changed until completion.
+        /// </summary>
+        public bool IsInteracting => _animator.GetBool(_isInteractingHash);
+
         public void Initialize()
         {
             //it appears author did this to force when the Animation Handler would load and not depend on the Start() chain in Unity
             _animator = GetComponent<Animator>();
+            _playerBody = GetComponent<Rigidbody>();
         }
 
-        public void UpdateFreelookMovementAnimation(Vector2 movementInput)
+        public void UpdateFreelookMovementAnimation(float totalMovement)
         {
-            // examine the x and y movement and add them together and pass that sum as the vertical value to the animator
-            // horizontal for free look will be currently hard coded to zero
-
-            var vertical = Mathf.Abs(GetNormalizedMovement(movementInput.y));
-            var horizontal = Mathf.Abs(GetNormalizedMovement(movementInput.x));
-
-            var totalMovement = Mathf.Clamp01(vertical + horizontal);
             _animator.SetFloat(_verticalHash, totalMovement, ANIMATION_DAMPING_TIME, Time.deltaTime);
             _animator.SetFloat(_horizontalHash, 0, ANIMATION_DAMPING_TIME, Time.deltaTime);
         }
@@ -37,12 +41,20 @@ namespace DarkSouls.Animation
         /// Plays the given animation.
         /// </summary>
         /// <param name="animation">The animation to play.</param>
-        /// <param name="isInteracting">If TRUE will lock the animator down until cleared so that no other movement can interrupt.</param>
-        public void PlayTargetAnimation(string animation, bool isInteracting)
+        /// <param name="isInteractingAnimation">If TRUE will lock the animator down until cleared so that no other movement can interrupt.</param>
+        public void PlayTargetAnimation(string animation, bool isInteractingAnimation)
         {
-            _animator.applyRootMotion = isInteracting;
-            _animator.SetBool(_isInteractingHash, isInteracting);
+            _animator.applyRootMotion = isInteractingAnimation;
+            _animator.SetBool(_isInteractingHash, isInteractingAnimation);
             _animator.CrossFade(animation, ANIMATION_CROSSFADE_DAMPING);
+        }
+
+        /// <summary>
+        /// Lets the animator know that it is finished interacting and player input can now be honored.
+        /// </summary>
+        public void FinishInteractionAnimation()
+        {
+            _animator.SetBool(_isInteractingHash, false);
         }
 
         public void StartRotation()
@@ -63,14 +75,20 @@ namespace DarkSouls.Animation
         /// <returns></returns>
         public bool CanRotate() => _canRotate;
 
-        private float GetNormalizedMovement(float movement)
+        private void OnAnimatorMove()
         {
-            if (movement > 0 && movement <= 0.55f) return 0.5f;
-            if (movement > 0.55f) return 1f;
-            if (movement < 0 && movement > -0.55f) return -0.5f;
-            if (movement < -0.55f) return -1f;
+            // sync up the camera to the player if they are performing an interactive move
+            // as root motion will move the player away from the camera
+            // todo: not convinced this is needed with the cinemachine
+            if (_animator.GetBool(_isInteractingHash) == false) return;
+            var deltaTime = Time.deltaTime;
+            _playerBody.drag = 0;
 
-            return 0;
+            var deltaPosition = _animator.deltaPosition;
+            deltaPosition.y = 0;
+
+            var velocity = deltaPosition / deltaTime;
+            _playerBody.velocity = velocity;
         }
     }
 }
