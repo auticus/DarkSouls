@@ -12,8 +12,9 @@ namespace DarkSouls.Locomotion.Player
         private readonly float _rollButtonPressBeforeSprintInvoked = 0.5f;
 
         private Vector3 _targetPosition;
-        private AnimationHandler _animationHandler;
 
+        private PlayerController _playerController;
+        private AnimationHandler _animationHandler;
         private Transform _playerTransform;
         private Rigidbody _rigidBody;
 
@@ -33,11 +34,11 @@ namespace DarkSouls.Locomotion.Player
 
         void Start()
         {
+            _playerController = GetComponent<PlayerController>();
             _rigidBody = GetComponent<Rigidbody>();
             _animationHandler = GetComponentInChildren<AnimationHandler>();
             _mainCamera = Camera.main.transform;
             _playerTransform = transform;
-            _animationHandler.Initialize();
             _inputHandler = GetComponent<InputHandler>();
 
             _inputHandler.OnInputRoll += InputHandlerOnInputRoll;
@@ -109,7 +110,7 @@ namespace DarkSouls.Locomotion.Player
         private void InputHandlerOnInputRoll()
         {
             //When the Roll button is pressed it will either Roll or if no direction was given it will back step the player
-            if (_animationHandler.IsInteracting) return;
+            if (_playerController.IsInteracting) return;
             
             var moveDirection = GetXZMoveDirectionFromInput();
             var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);

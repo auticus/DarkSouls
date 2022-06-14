@@ -7,11 +7,11 @@ namespace DarkSouls.Animation
     {
         public const string ROLLING_ANIMATION = "Rolling";
         public const string BACKSTEP_ANIMATION = "Backstep";
-
+        
         private readonly int _verticalHash = Animator.StringToHash("Vertical");
         private int _horizontalHash = Animator.StringToHash("Horizontal");
-        private int _isInteractingHash = Animator.StringToHash("isInteracting");
 
+        private PlayerController _playerController;
         private Animator _animator;
         private Rigidbody _playerBody;
         private bool _canRotate = true;
@@ -19,16 +19,11 @@ namespace DarkSouls.Animation
         private const float ANIMATION_DAMPING_TIME = 0.1f;
         private const float ANIMATION_CROSSFADE_DAMPING = 0.2f;
 
-        /// <summary>
-        /// Gets a value indicating if the animator is in an animation state that cannot be changed until completion.
-        /// </summary>
-        public bool IsInteracting => _animator.GetBool(_isInteractingHash);
-
-        public void Initialize()
+        void Start()
         {
-            //it appears author did this to force when the Animation Handler would load and not depend on the Start() chain in Unity
             _animator = GetComponent<Animator>();
             _playerBody = GetComponent<Rigidbody>();
+            _playerController = GetComponent<PlayerController>();
         }
 
         public void UpdateFreelookMovementAnimation(float totalMovement, bool isSprinting)
@@ -48,7 +43,7 @@ namespace DarkSouls.Animation
         public void PlayTargetAnimation(string animation, bool isInteractingAnimation)
         {
             _animator.applyRootMotion = isInteractingAnimation;
-            _animator.SetBool(_isInteractingHash, isInteractingAnimation);
+            _playerController.IsInteracting = isInteractingAnimation;
             _animator.CrossFade(animation, ANIMATION_CROSSFADE_DAMPING);
         }
 
@@ -57,7 +52,7 @@ namespace DarkSouls.Animation
         /// </summary>
         public void FinishInteractionAnimation()
         {
-            _animator.SetBool(_isInteractingHash, false);
+            _playerController.IsInteracting = false;
         }
 
         public void StartRotation()
@@ -83,7 +78,7 @@ namespace DarkSouls.Animation
             // sync up the camera to the player if they are performing an interactive move
             // as root motion will move the player away from the camera
             // todo: not convinced this is needed with the cinemachine
-            if (_animator.GetBool(_isInteractingHash) == false) return;
+            if (_playerController.IsInteracting == false) return;
             var deltaTime = Time.deltaTime;
             _playerBody.drag = 0;
 
