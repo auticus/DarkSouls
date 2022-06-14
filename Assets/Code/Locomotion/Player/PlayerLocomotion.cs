@@ -9,20 +9,26 @@ namespace DarkSouls.Locomotion.Player
     {
         private Transform _mainCamera;
         private InputHandler _inputHandler;
+        private readonly float _rollButtonPressBeforeSprintInvoked = 0.5f;
 
         private Vector3 _targetPosition;
         private AnimationHandler _animationHandler;
 
         private Transform _playerTransform;
         private Rigidbody _rigidBody;
-        private GameObject _normalCamera;  //free look camera
 
         private bool _isRolling;
         private bool _isBackStepping;
+        private bool _isSprinting;
+        private float _rollButtonPressedTime;
+        private bool _rollButtonInvoked;
+        private Vector3 _rollDirection;
 
         private Action _onInteractingAnimationComplete;
 
-        [Header("Stats")] [SerializeField] [Tooltip("How fast the player moves")] private float movementSpeed = 5;
+        [Header("Stats")] 
+        [SerializeField] [Tooltip("How fast the player moves")] private float movementSpeed = 5;
+        [SerializeField][Tooltip("How fast the player sprints")] private float sprintSpeed = 8;
         [SerializeField] [Tooltip("How quickly the player can rotate")] private float rotationSpeed = 10; //souls is very fast rotation
 
         void Start()
@@ -41,9 +47,11 @@ namespace DarkSouls.Locomotion.Player
         {
             var deltaTime = Time.deltaTime;
 
+            DecideToRollOrSprint(deltaTime);
+            DecideToEndSprint();
             //handle movement used to be here but is physics based
             var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
-            _animationHandler.UpdateFreelookMovementAnimation(totalMovement);
+            _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _isSprinting);
             if (_animationHandler.CanRotate()) HandleRotation(deltaTime);
         }
 
@@ -68,7 +76,7 @@ namespace DarkSouls.Locomotion.Player
         private void HandleMovement()
         {
             var moveDirection = GetXZMoveDirectionFromInput();
-            moveDirection *= movementSpeed;
+            moveDirection *= _isSprinting ? sprintSpeed : movementSpeed;
             _rigidBody.velocity = Vector3.ProjectOnPlane(moveDirection, Vector3.zero);
         }
 
@@ -114,7 +122,9 @@ namespace DarkSouls.Locomotion.Player
             }
             else
             {
-                HandleRoll(moveDirection);
+                _rollDirection = moveDirection;
+                _rollButtonPressedTime = 0;
+                _rollButtonInvoked = true;
             }
         }
 
@@ -123,6 +133,34 @@ namespace DarkSouls.Locomotion.Player
             _animationHandler.PlayTargetAnimation(AnimationHandler.BACKSTEP_ANIMATION, isInteractingAnimation: true);
             _isBackStepping = true;
             _onInteractingAnimationComplete = FinishBackStep;
+        }
+
+        private void DecideToRollOrSprint(float deltaTime)
+        {
+            if (_isRolling || _isSprinting) return;
+            if (!_rollButtonInvoked) return;
+
+            //at this point the roll button had been invoked so we are just waiting to decide to roll or sprint
+            if (_inputHandler.RollButtonPressed)
+            {
+                _rollButtonPressedTime += deltaTime;
+                if (_rollButtonPressedTime > _rollButtonPressBeforeSprintInvoked)
+                {
+                    _isSprinting = true; //handled in the movement code
+                    _rollButtonInvoked = false;
+                }
+
+                return;
+            }
+
+            //no longer pressed, but we didn't trigger a sprint - so roll
+            HandleRoll(_rollDirection);
+        }
+
+        private void DecideToEndSprint()
+        {
+            if (!_isSprinting) return;
+            if (!_inputHandler.RollButtonPressed) _isSprinting = false;
         }
 
         private void HandleRoll(Vector3 moveDirection)
@@ -137,6 +175,7 @@ namespace DarkSouls.Locomotion.Player
         private void FinishRolling()
         {
             _isRolling = false;
+            _rollButtonInvoked = false;
             _animationHandler.FinishInteractionAnimation();
         }
 

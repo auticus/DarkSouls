@@ -31,8 +31,11 @@ namespace DarkSouls.Animation
             _playerBody = GetComponent<Rigidbody>();
         }
 
-        public void UpdateFreelookMovementAnimation(float totalMovement)
+        public void UpdateFreelookMovementAnimation(float totalMovement, bool isSprinting)
         {
+            const float sprintAnimationValue = 2.0f;
+            
+            if (isSprinting) totalMovement = sprintAnimationValue;
             _animator.SetFloat(_verticalHash, totalMovement, ANIMATION_DAMPING_TIME, Time.deltaTime);
             _animator.SetFloat(_horizontalHash, 0, ANIMATION_DAMPING_TIME, Time.deltaTime);
         }
