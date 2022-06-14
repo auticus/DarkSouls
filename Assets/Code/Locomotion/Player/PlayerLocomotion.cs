@@ -49,16 +49,14 @@ namespace DarkSouls.Locomotion.Player
 
             DecideToRollOrSprint(deltaTime);
             DecideToEndSprint();
-            //handle movement used to be here but is physics based
+            
+            //INTERESTING
+            //Physics movement is supposed to be put into LateUpdate.  However LateUpdate will not move the character if they are animating
             var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
+            HandleMovement();
+
             _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _isSprinting);
             if (_animationHandler.CanRotate()) HandleRotation(deltaTime);
-        }
-
-        void FixedUpdate()
-        {
-            //deviation - HandleMovement is in FixedUpdate here instead of Update because it deals with the rigidbody and physics
-            HandleMovement();
         }
 
         public void FinishInteractiveAnimation()
@@ -130,6 +128,9 @@ namespace DarkSouls.Locomotion.Player
 
         private void HandleBackstep()
         {
+            var moveDirection = _mainCamera.forward * -1;
+            //_rigidBody.velocity = moveDirection * movementSpeed;
+            _rigidBody.AddForce(moveDirection * movementSpeed, ForceMode.Acceleration);
             _animationHandler.PlayTargetAnimation(AnimationHandler.BACKSTEP_ANIMATION, isInteractingAnimation: true);
             _isBackStepping = true;
             _onInteractingAnimationComplete = FinishBackStep;
