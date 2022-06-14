@@ -13,7 +13,7 @@ namespace DarkSouls.Input
         public bool RollButtonPressed { get; private set; }
 
         /// <summary>
-        /// 
+        /// Fires when the Roll button is invoked.
         /// </summary>
         public event Action OnInputRoll;
 

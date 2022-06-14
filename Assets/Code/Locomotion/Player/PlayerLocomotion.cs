@@ -57,7 +57,7 @@ namespace DarkSouls.Locomotion.Player
             HandleMovement();
 
             _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _isSprinting);
-            if (_animationHandler.CanRotate()) HandleRotation(deltaTime);
+            if (_playerController.CanRotate) HandleRotation(deltaTime);
         }
 
         public void FinishInteractiveAnimation()
