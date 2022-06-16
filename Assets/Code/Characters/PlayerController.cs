@@ -21,6 +21,22 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
+    /// Gets or set a value indicating that the player is rolling.
+    /// </summary>
+    public bool IsRolling { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating that the player is back stepping.
+    /// </summary>
+    public bool IsBackStepping { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating that the player is sprinting.
+    /// </summary>
+    public bool IsSprinting { get; set; }
+
+    
+    /// <summary>
     /// Gets a value indicating if the player in his current animation state may rotate.
     /// </summary>
     /// <returns></returns>

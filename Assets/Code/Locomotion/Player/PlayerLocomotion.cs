@@ -18,9 +18,6 @@ namespace DarkSouls.Locomotion.Player
         private Transform _playerTransform;
         private Rigidbody _rigidBody;
 
-        private bool _isRolling;
-        private bool _isBackStepping;
-        private bool _isSprinting;
         private float _rollButtonPressedTime;
         private bool _rollButtonInvoked;
         private Vector3 _rollDirection;
@@ -56,7 +53,7 @@ namespace DarkSouls.Locomotion.Player
             var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
             HandleMovement();
 
-            _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _isSprinting);
+            _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _playerController.IsSprinting);
             if (_playerController.CanRotate) HandleRotation(deltaTime);
         }
 
@@ -75,7 +72,7 @@ namespace DarkSouls.Locomotion.Player
         private void HandleMovement()
         {
             var moveDirection = GetXZMoveDirectionFromInput();
-            moveDirection *= _isSprinting ? sprintSpeed : movementSpeed;
+            moveDirection *= _playerController.IsSprinting ? sprintSpeed : movementSpeed;
             _rigidBody.velocity = Vector3.ProjectOnPlane(moveDirection, Vector3.zero);
         }
 
@@ -133,13 +130,13 @@ namespace DarkSouls.Locomotion.Player
             //_rigidBody.velocity = moveDirection * movementSpeed;
             _rigidBody.AddForce(moveDirection * movementSpeed, ForceMode.Acceleration);
             _animationHandler.PlayTargetAnimation(AnimationHandler.BACKSTEP_ANIMATION, isInteractingAnimation: true);
-            _isBackStepping = true;
+            _playerController.IsBackStepping = true;
             _onInteractingAnimationComplete = FinishBackStep;
         }
 
         private void DecideToRollOrSprint(float deltaTime)
         {
-            if (_isRolling || _isSprinting) return;
+            if (_playerController.IsRolling || _playerController.IsSprinting) return;
             if (!_rollButtonInvoked) return;
 
             //at this point the roll button had been invoked so we are just waiting to decide to roll or sprint
@@ -148,7 +145,7 @@ namespace DarkSouls.Locomotion.Player
                 _rollButtonPressedTime += deltaTime;
                 if (_rollButtonPressedTime > _rollButtonPressBeforeSprintInvoked)
                 {
-                    _isSprinting = true; //handled in the movement code
+                    _playerController.IsSprinting = true; //handled in the movement code
                     _rollButtonInvoked = false;
                 }
 
@@ -161,8 +158,8 @@ namespace DarkSouls.Locomotion.Player
 
         private void DecideToEndSprint()
         {
-            if (!_isSprinting) return;
-            if (!_inputHandler.RollButtonPressed) _isSprinting = false;
+            if (!_playerController.IsSprinting) return;
+            if (!_inputHandler.RollButtonPressed) _playerController.IsSprinting = false;
         }
 
         private void HandleRoll(Vector3 moveDirection)
@@ -170,20 +167,20 @@ namespace DarkSouls.Locomotion.Player
             _animationHandler.PlayTargetAnimation(AnimationHandler.ROLLING_ANIMATION, isInteractingAnimation: true);
             var rollRotation = Quaternion.LookRotation(moveDirection);
             _playerTransform.rotation = rollRotation;
-            _isRolling = true;
+            _playerController.IsRolling = true;
             _onInteractingAnimationComplete = FinishRolling;
         }
 
         private void FinishRolling()
         {
-            _isRolling = false;
+            _playerController.IsRolling = false;
             _rollButtonInvoked = false;
             _animationHandler.FinishInteractionAnimation();
         }
 
         private void FinishBackStep()
         {
-            _isBackStepping = false;
+            _playerController.IsBackStepping = false;
             _animationHandler.FinishInteractionAnimation();
         }
 
