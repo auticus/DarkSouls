@@ -11,15 +11,12 @@ namespace DarkSouls.Locomotion.Player
         private InputHandler _inputHandler;
         private readonly float _rollButtonPressBeforeSprintInvoked = 0.5f;
 
-        private Vector3 _targetPosition;
-
         private PlayerController _playerController;
         private AnimationHandler _animationHandler;
         private Transform _playerTransform;
         private Rigidbody _rigidBody;
 
         private float _rollButtonPressedTime;
-        private bool _rollButtonInvoked;
         private Vector3 _rollDirection;
 
         private Action _onInteractingAnimationComplete;
@@ -45,16 +42,13 @@ namespace DarkSouls.Locomotion.Player
         {
             var deltaTime = Time.deltaTime;
 
-            DecideToRollOrSprint(deltaTime);
-            DecideToEndSprint();
-            
             //INTERESTING
             //Physics movement is supposed to be put into LateUpdate.  However LateUpdate will not move the character if they are animating
-            var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
+            //indicating the movement AND animation logic all need to happen in the same Update or LateUpdate
+            HandleRollingAndSprinting(deltaTime);
             HandleMovement();
-
-            _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _playerController.IsSprinting);
-            if (_playerController.CanRotate) HandleRotation(deltaTime);
+            HandleFreeLookAnimations();
+            HandleRotation(deltaTime);
         }
 
         public void FinishInteractiveAnimation()
@@ -67,6 +61,18 @@ namespace DarkSouls.Locomotion.Player
 
             _onInteractingAnimationComplete.Invoke();
             _onInteractingAnimationComplete = null;
+        }
+
+        private void HandleRollingAndSprinting(float deltaTime)
+        {
+            DecideToRollOrSprint(deltaTime);
+            DecideToEndSprint();
+        }
+
+        private void HandleFreeLookAnimations()
+        {
+            var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
+            _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _playerController.IsSprinting);
         }
 
         private void HandleMovement()
@@ -88,6 +94,8 @@ namespace DarkSouls.Locomotion.Player
 
         private void HandleRotation(float deltaTime)
         {
+            if (!_playerController.CanRotate) return;
+
             var targetVector = Vector3.zero;
 
             targetVector = _mainCamera.forward * _inputHandler.MovementInput.y;
@@ -120,7 +128,7 @@ namespace DarkSouls.Locomotion.Player
             {
                 _rollDirection = moveDirection;
                 _rollButtonPressedTime = 0;
-                _rollButtonInvoked = true;
+                _playerController.RollButtonInvoked = true;
             }
         }
 
@@ -137,7 +145,7 @@ namespace DarkSouls.Locomotion.Player
         private void DecideToRollOrSprint(float deltaTime)
         {
             if (_playerController.IsRolling || _playerController.IsSprinting) return;
-            if (!_rollButtonInvoked) return;
+            if (!_playerController.RollButtonInvoked) return;
 
             //at this point the roll button had been invoked so we are just waiting to decide to roll or sprint
             if (_inputHandler.RollButtonPressed)
@@ -146,7 +154,7 @@ namespace DarkSouls.Locomotion.Player
                 if (_rollButtonPressedTime > _rollButtonPressBeforeSprintInvoked)
                 {
                     _playerController.IsSprinting = true; //handled in the movement code
-                    _rollButtonInvoked = false;
+                    _playerController.RollButtonInvoked = false;
                 }
 
                 return;
@@ -174,7 +182,7 @@ namespace DarkSouls.Locomotion.Player
         private void FinishRolling()
         {
             _playerController.IsRolling = false;
-            _rollButtonInvoked = false;
+            _playerController.RollButtonInvoked = false;
             _animationHandler.FinishInteractionAnimation();
         }
 

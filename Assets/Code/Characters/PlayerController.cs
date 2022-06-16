@@ -35,7 +35,11 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public bool IsSprinting { get; set; }
 
-    
+    /// <summary>
+    /// Gets or sets a value indicating that the roll button was invoked.
+    /// </summary>
+    public bool RollButtonInvoked { get; set; }
+
     /// <summary>
     /// Gets a value indicating if the player in his current animation state may rotate.
     /// </summary>
