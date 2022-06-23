@@ -1,12 +1,14 @@
-﻿using DarkSouls.Locomotion.Player;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DarkSouls.Animation
 {
     public class AnimationHandler : MonoBehaviour
     {
+        public const string LOCOMOTION_TREE = "Locomotion";
         public const string ROLLING_ANIMATION = "Rolling";
         public const string BACKSTEP_ANIMATION = "Backstep";
+        public const string LANDING_ANIMATION = "Landing";
+        public const string FALLING_ANIMATION = "Falling";
         
         private readonly int _verticalHash = Animator.StringToHash("Vertical");
         private int _horizontalHash = Animator.StringToHash("Horizontal");

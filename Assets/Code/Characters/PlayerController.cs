@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
     private readonly int _isInteractingHash = Animator.StringToHash("isInteracting");
     private bool _isInteracting;
     private bool _canRotate = true;
-
+    
     /// <summary>
     /// Gets a value indicating if the animator is in an animation state that cannot be changed until completion.
     /// </summary>
@@ -21,6 +21,11 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
+    /// Gets or sets a value indicating how long the player has been in the air.
+    /// </summary>
+    public float AerialTimer { get; set; }
+
+    /// <summary>
     /// Gets or set a value indicating that the player is rolling.
     /// </summary>
     public bool IsRolling { get; set; }
@@ -29,6 +34,16 @@ public class PlayerController : MonoBehaviour
     /// Gets or sets a value indicating that the player is back stepping.
     /// </summary>
     public bool IsBackStepping { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating that the player is in the air.
+    /// </summary>
+    public bool IsAerial { get; set; } //todo: why not just make this IsGrounded = false?
+
+    /// <summary>
+    /// Gets or sets a value indicating that the player is on the ground.
+    /// </summary>
+    public bool IsGrounded { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating that the player is sprinting.
@@ -60,5 +75,14 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         _isInteracting = _animator.GetBool(_isInteractingHash);
+    }
+
+    void LateUpdate()
+    {
+        if (IsAerial)
+        {
+            //deviation: he has in air timer on the PlayerLocomotion component but I moved it here because locomotion doesn't care how long its in the air
+            AerialTimer += Time.deltaTime;
+        }
     }
 }
