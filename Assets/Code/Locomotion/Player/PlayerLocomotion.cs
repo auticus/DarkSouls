@@ -21,8 +21,7 @@ namespace DarkSouls.Locomotion.Player
         private Vector3 _moveDirection;
 
         private Action _onInteractingAnimationComplete;
-
-        private LayerMask _ignoreLayerForGroundCheck;
+        private Gravity _gravityLocomotion;
 
         [Header("Stats")]
         [SerializeField][Tooltip("How fast the player falls")] private float fallingSpeed = 60; //todo: this is not realistic having a constant fall rate
@@ -47,8 +46,13 @@ namespace DarkSouls.Locomotion.Player
 
             _inputHandler.OnInputRoll += InputHandlerOnInputRoll;
 
+            _gravityLocomotion = new Gravity(
+                _animationHandler,
+                _playerController,
+                _playerTransform,
+                _rigidBody);
+
             _playerController.IsGrounded = true;
-            _ignoreLayerForGroundCheck = ~(1 << 8 | 1 << 11); //todo: get rid of these magic numbers
         }
 
         void Update()
@@ -63,7 +67,18 @@ namespace DarkSouls.Locomotion.Player
             HandleMovement();
             HandleFreeLookAnimations();
             HandleRotation(deltaTime);
-            HandleFalling(deltaTime); //this is also what keeps the character model up and not sunk in because of the collider being up above the knees
+
+            //this is also what keeps the character model up and not sunk in because of the collider being up above the knees
+            _gravityLocomotion.HandleFalling(
+                deltaTime, 
+                fallingSpeed, 
+                groundDetectionRayOffset, 
+                groundDetectionRayStartPoint,
+                minDistanceNeededToBeginFallAnimation, 
+                _moveDirection, 
+                movementSpeed, 
+                GetTotalNormalizedMovement(_inputHandler.MovementInput),
+                ref _onInteractingAnimationComplete);
         }
 
         public void FinishInteractiveAnimation()
@@ -116,112 +131,6 @@ namespace DarkSouls.Locomotion.Player
             var targetRotation = Quaternion.Slerp(_playerTransform.rotation, desiredRotation, rotationSpeed * deltaTime);
 
             _playerTransform.rotation = targetRotation;
-        }
-
-        private void HandleFalling(float delta)
-        {
-            /*
-             * Something about this method is also responsible for keeping the character above the ground as the collider is currently above its knees
-             */
-
-            _playerController.IsGrounded = false;
-
-            var origin = _playerTransform.position;
-            origin.y += groundDetectionRayStartPoint;
-            const float nudgeOffLedgeDivisor = 1f; //the larger this is, the less they will fly forward off of a ledge (since we are dividing by this)
-            const float raycastInfrontOfPlayerDistance = 0.4f;
-
-            var moveDirection = _moveDirection;
-
-            if (Physics.Raycast(origin, _playerTransform.forward, out var hit, raycastInfrontOfPlayerDistance))
-            {
-                //if there's something right in front of me, we're not moving
-                moveDirection = Vector3.zero;
-            }
-
-            if (_playerController.IsAerial)
-            {
-                _rigidBody.AddForce(-Vector3.up * fallingSpeed); //apply the falling speed down (again not realistic should be falling 9.8 m/s extra per turn until terminal velocity)
-                
-                //this is supposed to help boost them off ledges and move them forward.  I'm not convinced this is needed
-                var movementVelocity = moveDirection * fallingSpeed / nudgeOffLedgeDivisor;
-
-                if (movementVelocity != Vector3.zero)
-                {
-                    _rigidBody.AddForce(moveDirection * fallingSpeed / nudgeOffLedgeDivisor, ForceMode.Acceleration); //allows player to come off ledges or whatever by pushing them forward a tiny bit
-                }
-            }
-
-            var direction = moveDirection;
-            direction.Normalize();
-            origin = origin + direction * groundDetectionRayOffset; //bump the ray start forward or backward of the player
-
-            var targetPosition = _playerTransform.position;
-
-            Debug.DrawRay(origin, -Vector3.up * minDistanceNeededToBeginFallAnimation, Color.red, 0.1f, false);
-            if (Physics.Raycast(origin, 
-                    -Vector3.up, 
-                    out hit, 
-                    minDistanceNeededToBeginFallAnimation,
-                    _ignoreLayerForGroundCheck))
-            {
-                //we hit the ground, we aren't falling, just put the position down on the ground
-                var normalVector = hit.normal;
-                var targetPoint = hit.point;
-                _playerController.IsGrounded = true;
-                targetPosition.y = targetPoint.y;
-
-                if (_playerController.IsAerial)
-                {
-                    const float inTheAirMinimumToLaunchAnimation = 0.5f;
-
-                    //we were in the air but now are about to land
-                    if (_playerController.AerialTimer > inTheAirMinimumToLaunchAnimation)
-                    {
-                        Debug.Log($"You were in the air for {_playerController.AerialTimer}");
-                        _onInteractingAnimationComplete = FinishLanding;
-                        _animationHandler.PlayTargetAnimation(AnimationHandler.LANDING_ANIMATION, isInteractingAnimation: true);
-                    }
-                    else
-                    {
-                        //_animationHandler.PlayTargetAnimation(AnimationHandler.LOCOMOTION_TREE, isInteractingAnimation: false);
-                    }
-                    _playerController.AerialTimer = 0;
-                    _playerController.IsAerial = false;
-                }
-            }
-            else //we are now flying since the raycast has not detected the ground
-            {
-                if (_playerController.IsGrounded)
-                {
-                    _playerController.IsGrounded = false;
-                }
-
-                if (!_playerController.IsAerial)
-                {
-                    if (!_playerController.IsInteracting)
-                    {
-                        _animationHandler.PlayTargetAnimation(AnimationHandler.FALLING_ANIMATION, isInteractingAnimation: true);
-                    }
-
-                    var velocity = _rigidBody.velocity;
-                    velocity.Normalize();
-                    _rigidBody.velocity = velocity * (movementSpeed / 2);
-                    _playerController.IsAerial = true;
-                }
-            }
-
-            if (_playerController.IsGrounded)
-            {
-                if (_playerController.IsInteracting || GetTotalNormalizedMovement(_inputHandler.MovementInput) > 0)
-                {
-                    _playerTransform.position = Vector3.Lerp(_playerTransform.position, targetPosition, Time.deltaTime);
-                }
-                else
-                {
-                    _playerTransform.position = targetPosition;
-                }
-            }
         }
 
         private Vector3 GetXZMoveDirectionFromInput()
@@ -309,11 +218,6 @@ namespace DarkSouls.Locomotion.Player
         private void FinishBackStep()
         {
             _playerController.IsBackStepping = false;
-            _animationHandler.FinishInteractionAnimation();
-        }
-
-        private void FinishLanding()
-        {
             _animationHandler.FinishInteractionAnimation();
         }
 
