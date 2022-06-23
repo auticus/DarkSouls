@@ -4,7 +4,7 @@ namespace DarkSouls.Animation
 {
     public class AnimationHandler : MonoBehaviour
     {
-        public const string LOCOMOTION_TREE = "Locomotion";
+        public const string EMPTY_ANIMATION = "Empty";
         public const string ROLLING_ANIMATION = "Rolling";
         public const string BACKSTEP_ANIMATION = "Backstep";
         public const string LANDING_ANIMATION = "Landing";

@@ -31,7 +31,7 @@ namespace DarkSouls.Locomotion.Player
 
         [Header("Ground & Air Detection Stats")]
         [SerializeField][Tooltip("The point from the player that the raycast begins (the bottom of the collider)")] private float groundDetectionRayStartPoint = 0.5f;
-        [SerializeField][Tooltip("Offset point front of player/back of player from where the raycast should begin")] private float groundDetectionRayOffset = 0.1f;
+        [SerializeField][Tooltip("Offset point front of player/back of player from where the raycast should begin")] private float groundDetectionRayOffset = 0f;
         [SerializeField][Tooltip("What the distance is before the falling animation should play")] private float minDistanceNeededToBeginFallAnimation = 1f;
 
 

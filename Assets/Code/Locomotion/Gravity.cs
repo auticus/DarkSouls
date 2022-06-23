@@ -25,6 +25,7 @@ namespace DarkSouls.Locomotion
             _characterController = characterController;
             _characterTransform = characterTransform;
             _rigidBody = characterRigidBody;
+            //bitshift 8 and 11 with the tilde means collide against everything except for layer 8 and 11
             _ignoreLayerForGroundCheck = ~(1 << 8 | 1 << 11); //todo: get rid of these magic numbers
         }
 
@@ -39,7 +40,6 @@ namespace DarkSouls.Locomotion
              * Something about this method is also responsible for keeping the character above the ground as the collider is currently above its knees
              */
             //Initialization and prep the origin of the ray
-            _characterController.IsGrounded = false;
             var origin = _characterTransform.position;
             origin.y += groundDetectionRayStartPoint;
 
@@ -94,18 +94,17 @@ namespace DarkSouls.Locomotion
         /// <param name="fallingSpeed"></param>
         private void ApplyGravityForceToAerialCharacter(Vector3 moveDirection, float fallingSpeed)
         {
-            const float nudgeOffLedgeDivisor = 1f; //the larger this is, the less they will fly forward off of a ledge (since we are dividing by this)
-
+            const float ledgeBoostMultipler = 2.0f;
             if (_characterController.IsAerial)
             {
                 _rigidBody.AddForce(-Vector3.up * fallingSpeed); //apply the falling speed down (again not realistic should be falling 9.8 m/s extra per turn until terminal velocity)
 
                 //this is supposed to help boost them off ledges and move them forward.  I'm not convinced this is needed
-                var movementVelocity = moveDirection * fallingSpeed / nudgeOffLedgeDivisor;
+                var movementVelocity = moveDirection * fallingSpeed * ledgeBoostMultipler;
 
                 if (movementVelocity != Vector3.zero)
                 {
-                    _rigidBody.AddForce(moveDirection * fallingSpeed / nudgeOffLedgeDivisor, ForceMode.Acceleration); //allows player to come off ledges or whatever by pushing them forward a tiny bit
+                    _rigidBody.AddForce(movementVelocity); //allows player to come off ledges or whatever by pushing them forward a tiny bit
                 }
             }
         }
@@ -156,7 +155,7 @@ namespace DarkSouls.Locomotion
             }
 
             if (_characterController.IsAerial) return;
-
+            
             if (!_characterController.IsInteracting)
             {
                 _animationHandler.PlayTargetAnimation(AnimationHandler.FALLING_ANIMATION, isInteractingAnimation: true);
@@ -200,7 +199,8 @@ namespace DarkSouls.Locomotion
                 }
                 else //we weren't in the air long enough to care about a landing animation
                 {
-                    //_animationHandler.PlayTargetAnimation(AnimationHandler.LOCOMOTION_TREE, isInteractingAnimation: false);
+                    //without this branch it will sit in a perpetual flying state forever
+                    _animationHandler.PlayTargetAnimation(AnimationHandler.EMPTY_ANIMATION, isInteractingAnimation: false);
                 }
                 _characterController.AerialTimer = 0;
                 _characterController.IsAerial = false;
