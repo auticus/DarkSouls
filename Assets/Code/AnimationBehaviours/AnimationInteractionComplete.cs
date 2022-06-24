@@ -9,7 +9,7 @@ namespace DarkSouls.AnimationBehaviours
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             //this assumes the animator component on the player is on the same object as the PlayerLocomotion script
-            if (animator.transform.TryGetComponent(out PlayerLocomotion player))
+            if (animator.transform.parent.TryGetComponent(out PlayerLocomotion player))
             {
                 player.FinishInteractiveAnimation();
                 return;

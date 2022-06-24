@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update WHEN A SCRIPT IS ENABLED
     void Start()
     {
-        _animator = GetComponent<Animator>();
+        _animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
