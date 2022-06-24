@@ -23,8 +23,8 @@ namespace DarkSouls.Animation
         void Start()
         {
             _animator = GetComponent<Animator>();
-            _playerBody = transform.parent.GetComponent<Rigidbody>();
-            _playerController = transform.parent.GetComponent<PlayerController>();
+            _playerBody = transform.GetComponent<Rigidbody>();
+            _playerController = transform.GetComponent<PlayerController>();
         }
 
         public void UpdateFreelookMovementAnimation(float totalMovement, bool isSprinting)
