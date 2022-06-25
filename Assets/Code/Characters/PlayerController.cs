@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -65,6 +66,11 @@ public class PlayerController : MonoBehaviour
         set => _canRotate = value;
     }
 
+    /// <summary>
+    /// Gets or sets an action that will execute when an interacting animation completes.
+    /// </summary>
+    public Action OnInteractingAnimationCompleteDoThis;
+
     // Start is called before the first frame update WHEN A SCRIPT IS ENABLED
     void Start()
     {
@@ -84,5 +90,17 @@ public class PlayerController : MonoBehaviour
             //deviation: he has in air timer on the PlayerLocomotion component but I moved it here because locomotion doesn't care how long its in the air
             AerialTimer += Time.deltaTime;
         }
+    }
+
+    public void FinishInteractiveAnimation()
+    {
+        if (OnInteractingAnimationCompleteDoThis == null)
+        {
+            Debug.Log("PlayerController :: FinishInteractiveAnimation action not set.  This is fine to ignore on the very start of the game as Enter State fires this off.  Otherwise if you see this any time after, this needs checked.");
+            return;
+        }
+
+        OnInteractingAnimationCompleteDoThis.Invoke();
+        OnInteractingAnimationCompleteDoThis = null;
     }
 }

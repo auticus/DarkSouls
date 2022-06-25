@@ -34,7 +34,7 @@ namespace DarkSouls.Locomotion
         /// </summary>
         /// <param name="delta"></param>
         public void HandleFalling(float delta, float fallingSpeed, float groundDetectionRayOffset, float groundDetectionRayStartPoint, float minDistanceNeededToBeginFallAnimation,
-            Vector3 moveDirection, float movementSpeed, float totalNormalizedMovement, ref Action onInteractionAnimationComplete)
+            Vector3 moveDirection, float movementSpeed, float totalNormalizedMovement, PlayerController playerController)
         {
             /*
              * Something about this method is also responsible for keeping the character above the ground as the collider is currently above its knees
@@ -58,7 +58,7 @@ namespace DarkSouls.Locomotion
                 minDistanceNeededToBeginFallAnimation,
                 _ignoreLayerForGroundCheck);
 
-            if (characterIsOnGround) HandleGroundedCharacter(groundPoint, ref targetPosition, ref onInteractionAnimationComplete);
+            if (characterIsOnGround) HandleGroundedCharacter(groundPoint, ref targetPosition, playerController);
             else HandleAerialCharacter(movementSpeed);
 
             LiftCharacterToGroundIfGrounded(totalNormalizedMovement, groundPoint.point);
@@ -128,7 +128,7 @@ namespace DarkSouls.Locomotion
         /// <param name="groundPoint"></param>
         /// <param name="targetPosition">A reference to character position.</param>
         /// <param name="onInteractionAnimationComplete"></param>
-        private void HandleGroundedCharacter(RaycastHit groundPoint, ref Vector3 targetPosition, ref Action onInteractionAnimationComplete)
+        private void HandleGroundedCharacter(RaycastHit groundPoint, ref Vector3 targetPosition, PlayerController playerController)
         {
             //this function is what makes the character actually be on the ground instead of sinking up to their knees because their capsule has been
             //lifted up a bit higher
@@ -139,7 +139,7 @@ namespace DarkSouls.Locomotion
             _characterController.IsGrounded = true;
 
             targetPosition.y = targetPoint.y; //this helps bring the character position to the ground (but also needs the lift function as well)
-            LandAerialCharacterIfNeeded(ref onInteractionAnimationComplete);
+            LandAerialCharacterIfNeeded(playerController);
         }
 
         /// <summary>
@@ -187,14 +187,14 @@ namespace DarkSouls.Locomotion
             }
         }
 
-        private void LandAerialCharacterIfNeeded(ref Action onInteractionAnimationComplete)
+        private void LandAerialCharacterIfNeeded(PlayerController playerController)
         {
             if (_characterController.IsAerial)
             {
                 //we were in the air but now are about to land
                 if (_characterController.AerialTimer > inTheAirMinimumToLaunchAnimation)
                 {
-                    onInteractionAnimationComplete = FinishLanding;
+                    playerController.OnInteractingAnimationCompleteDoThis = FinishLanding;
                     _animationHandler.PlayTargetAnimation(AnimationHandler.LANDING_ANIMATION, isInteractingAnimation: true);
                 }
                 else //we weren't in the air long enough to care about a landing animation

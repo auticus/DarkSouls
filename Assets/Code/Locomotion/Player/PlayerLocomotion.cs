@@ -20,7 +20,6 @@ namespace DarkSouls.Locomotion.Player
         private Vector3 _rollDirection;
         private Vector3 _moveDirection;
 
-        private Action _onInteractingAnimationComplete;
         private Gravity _gravityLocomotion;
 
         [Header("Stats")]
@@ -78,19 +77,7 @@ namespace DarkSouls.Locomotion.Player
                 _moveDirection, 
                 movementSpeed, 
                 GetTotalNormalizedMovement(_inputHandler.MovementInput),
-                ref _onInteractingAnimationComplete);
-        }
-
-        public void FinishInteractiveAnimation()
-        {
-            if (_onInteractingAnimationComplete == null)
-            {
-                Debug.LogError("PlayerLocomotion :: FinishInteractiveAnimation action not set!");
-                return;
-            }
-
-            _onInteractingAnimationComplete.Invoke();
-            _onInteractingAnimationComplete = null;
+                _playerController);
         }
 
         private void HandleRollingAndSprinting(float deltaTime)
@@ -148,8 +135,9 @@ namespace DarkSouls.Locomotion.Player
             //When the Roll button is pressed it will either Roll or if no direction was given it will back step the player
             if (_playerController.IsInteracting) return;
             var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
+            var movementThresholdToSprint = 0.5f;
 
-            if (totalMovement == 0)
+            if (totalMovement < movementThresholdToSprint)
             {
                 HandleBackstep();
             }
@@ -168,7 +156,7 @@ namespace DarkSouls.Locomotion.Player
             _rigidBody.AddForce(moveDirection * movementSpeed, ForceMode.Acceleration);
             _animationHandler.PlayTargetAnimation(AnimationHandler.BACKSTEP_ANIMATION, isInteractingAnimation: true);
             _playerController.IsBackStepping = true;
-            _onInteractingAnimationComplete = FinishBackStep;
+            _playerController.OnInteractingAnimationCompleteDoThis = FinishBackStep;
         }
 
         private void DecideToRollOrSprint(float deltaTime)
@@ -199,7 +187,7 @@ namespace DarkSouls.Locomotion.Player
             var rollRotation = Quaternion.LookRotation(moveDirection);
             _playerTransform.rotation = rollRotation;
             _playerController.IsRolling = true;
-            _onInteractingAnimationComplete = FinishRolling;
+            _playerController.OnInteractingAnimationCompleteDoThis = FinishRolling;
         }
 
         private void DecideToEndSprint()
