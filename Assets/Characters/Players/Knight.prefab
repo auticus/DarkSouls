@@ -44328,12 +44328,13 @@ GameObject:
   - component: {fileID: 3150583110280533154}
   - component: {fileID: 6666941114434807446}
   - component: {fileID: 4830839913021900416}
+  - component: {fileID: 8561707320779888328}
+  - component: {fileID: 3256151380229084254}
+  - component: {fileID: 6551292130420177035}
+  - component: {fileID: 4301015686137869072}
   - component: {fileID: 3696229511556682033}
   - component: {fileID: 685054494877594491}
-  - component: {fileID: 4301015686137869072}
-  - component: {fileID: 8561707320779888328}
   - component: {fileID: 2420200900932570450}
-  - component: {fileID: 6551292130420177035}
   m_Layer: 0
   m_Name: Knight
   m_TagString: Untagged
@@ -44409,6 +44410,56 @@ CapsuleCollider:
   m_Height: 1.7
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &8561707320779888328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3092354701724142612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f6de6e4c02ddbd4e93982ab1c73707c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3256151380229084254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3092354701724142612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03d176c22340394ca9ff695c6554da9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6551292130420177035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3092354701724142612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a64eca8dff9f4f45b1f7d8cc0298c44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RightHand: {fileID: 0}
+  LeftHand: {fileID: 0}
+--- !u!114 &4301015686137869072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3092354701724142612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d732766483635949bfb422c5d81173d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3696229511556682033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44440,30 +44491,6 @@ MonoBehaviour:
   groundDetectionRayStartPoint: 0.5
   groundDetectionRayOffset: 0.2
   minDistanceNeededToBeginFallAnimation: 1
---- !u!114 &4301015686137869072
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3092354701724142612}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d732766483635949bfb422c5d81173d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8561707320779888328
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3092354701724142612}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f6de6e4c02ddbd4e93982ab1c73707c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2420200900932570450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44476,20 +44503,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ecd86df83cd8f34fbf8ed1623a51f35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6551292130420177035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3092354701724142612}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a64eca8dff9f4f45b1f7d8cc0298c44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RightHand: {fileID: 0}
-  LeftHand: {fileID: 0}
 --- !u!1 &3092355786841598692
 GameObject:
   m_ObjectHideFlags: 0

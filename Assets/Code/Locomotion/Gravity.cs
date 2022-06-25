@@ -200,6 +200,7 @@ namespace DarkSouls.Locomotion
                 else //we weren't in the air long enough to care about a landing animation
                 {
                     //without this branch it will sit in a perpetual flying state forever
+                    //this takes us to the empty non-state in the animator.
                     _animationHandler.PlayTargetAnimation(AnimationHandler.EMPTY_ANIMATION, isInteractingAnimation: false);
                 }
                 _characterController.AerialTimer = 0;

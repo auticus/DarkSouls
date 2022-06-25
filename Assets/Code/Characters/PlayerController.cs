@@ -42,6 +42,16 @@ public class PlayerController : MonoBehaviour
     public bool IsAerial { get; set; } //todo: why not just make this IsGrounded = false?
 
     /// <summary>
+    /// Gets or sets a value indicating that the player is performing an attack with their right hand.
+    /// </summary>
+    public bool IsAttacking { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating that the player is performing a heavy attack with their right hand.
+    /// </summary>
+    public bool IsHeavyAttacking { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating that the player is on the ground.
     /// </summary>
     public bool IsGrounded { get; set; }
@@ -85,6 +95,10 @@ public class PlayerController : MonoBehaviour
 
     void LateUpdate()
     {
+        /*
+         * Note in tutorial he sets all of the input handler flags explicitly to false but we let the input handler handle that and fire events accordingly
+         */
+
         if (IsAerial)
         {
             //deviation: he has in air timer on the PlayerLocomotion component but I moved it here because locomotion doesn't care how long its in the air

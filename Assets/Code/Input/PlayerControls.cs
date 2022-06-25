@@ -140,6 +140,24 @@ namespace DarkSouls.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""fe474925-43a1-4555-b62f-cdee1a3df6bf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Heavy Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""5e33c646-8c06-42a6-8375-c24cdd7ecbd3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -164,6 +182,50 @@ namespace DarkSouls.Input
                     ""action"": ""Roll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2b8712e2-584c-4b6a-adab-75cfe3386a98"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b1ae85c5-c28c-4c60-9022-1007a778e783"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0f131daf-a1f1-485b-b60b-0bc9593d42b5"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Heavy Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bfaf3fc1-6c8b-4620-b4d9-d628057c4275"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Heavy Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -177,6 +239,8 @@ namespace DarkSouls.Input
             // Player Actions
             m_PlayerActions = asset.FindActionMap("Player Actions", throwIfNotFound: true);
             m_PlayerActions_Roll = m_PlayerActions.FindAction("Roll", throwIfNotFound: true);
+            m_PlayerActions_Attack = m_PlayerActions.FindAction("Attack", throwIfNotFound: true);
+            m_PlayerActions_HeavyAttack = m_PlayerActions.FindAction("Heavy Attack", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -278,11 +342,15 @@ namespace DarkSouls.Input
         private readonly InputActionMap m_PlayerActions;
         private IPlayerActionsActions m_PlayerActionsActionsCallbackInterface;
         private readonly InputAction m_PlayerActions_Roll;
+        private readonly InputAction m_PlayerActions_Attack;
+        private readonly InputAction m_PlayerActions_HeavyAttack;
         public struct PlayerActionsActions
         {
             private @PlayerControls m_Wrapper;
             public PlayerActionsActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
             public InputAction @Roll => m_Wrapper.m_PlayerActions_Roll;
+            public InputAction @Attack => m_Wrapper.m_PlayerActions_Attack;
+            public InputAction @HeavyAttack => m_Wrapper.m_PlayerActions_HeavyAttack;
             public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -295,6 +363,12 @@ namespace DarkSouls.Input
                     @Roll.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnRoll;
                     @Roll.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnRoll;
                     @Roll.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnRoll;
+                    @Attack.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnAttack;
+                    @Attack.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnAttack;
+                    @Attack.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnAttack;
+                    @HeavyAttack.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnHeavyAttack;
+                    @HeavyAttack.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnHeavyAttack;
+                    @HeavyAttack.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnHeavyAttack;
                 }
                 m_Wrapper.m_PlayerActionsActionsCallbackInterface = instance;
                 if (instance != null)
@@ -302,6 +376,12 @@ namespace DarkSouls.Input
                     @Roll.started += instance.OnRoll;
                     @Roll.performed += instance.OnRoll;
                     @Roll.canceled += instance.OnRoll;
+                    @Attack.started += instance.OnAttack;
+                    @Attack.performed += instance.OnAttack;
+                    @Attack.canceled += instance.OnAttack;
+                    @HeavyAttack.started += instance.OnHeavyAttack;
+                    @HeavyAttack.performed += instance.OnHeavyAttack;
+                    @HeavyAttack.canceled += instance.OnHeavyAttack;
                 }
             }
         }
@@ -314,6 +394,8 @@ namespace DarkSouls.Input
         public interface IPlayerActionsActions
         {
             void OnRoll(InputAction.CallbackContext context);
+            void OnAttack(InputAction.CallbackContext context);
+            void OnHeavyAttack(InputAction.CallbackContext context);
         }
     }
 }

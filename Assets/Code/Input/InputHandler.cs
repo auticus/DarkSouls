@@ -11,11 +11,23 @@ namespace DarkSouls.Input
         /// </summary>
         public Vector2 MovementInput { get; private set; }
         public bool RollButtonPressed { get; private set; }
+        public bool AttackButtonPressed { get; private set; }
+        public bool HeavyAttackButtonPressed { get; private set; }
 
         /// <summary>
         /// Fires when the Roll button is invoked.
         /// </summary>
         public event Action OnInputRoll;
+
+        /// <summary>
+        /// Fires when the Attack button is pressed.
+        /// </summary>
+        public event Action OnInputAttack;
+
+        /// <summary>
+        /// Fires when the Heavy Attack button is pressed.
+        /// </summary>
+        public event Action OnInputHeavyAttack;
 
         private PlayerControls _inputActions;
         
@@ -56,6 +68,34 @@ namespace DarkSouls.Input
             if (context.canceled)
             {
                 RollButtonPressed = false;
+            }
+        }
+
+        public void OnAttack(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                AttackButtonPressed = true;
+                OnInputAttack?.Invoke();
+            }
+
+            if (context.canceled)
+            {
+                AttackButtonPressed = false;
+            }
+        }
+
+        public void OnHeavyAttack(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                HeavyAttackButtonPressed = true;
+                OnInputHeavyAttack?.Invoke();
+            }
+
+            if (context.canceled)
+            {
+                HeavyAttackButtonPressed = false;
             }
         }
     }

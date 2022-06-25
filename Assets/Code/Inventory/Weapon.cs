@@ -7,5 +7,10 @@ namespace DarkSouls.Inventory
     {
         public GameObject ModelPrefab;
         public bool IsUnarmed;
+
+        [Header("One Handed Attack Animations")]
+        public string OneHandedLightAttack;
+
+        public string OneHandedHeavyAttack;
     }
 }
