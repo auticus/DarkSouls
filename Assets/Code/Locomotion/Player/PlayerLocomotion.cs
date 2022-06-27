@@ -38,7 +38,7 @@ namespace DarkSouls.Locomotion.Player
         {
             _playerController = GetComponent<PlayerController>();
             _rigidBody = GetComponent<Rigidbody>();
-            _animationHandler = GetComponentInChildren<AnimationHandler>();
+            _animationHandler = GetComponent<AnimationHandler>();
             _mainCamera = Camera.main.transform;
             _playerTransform = transform;
             _inputHandler = GetComponent<InputHandler>();

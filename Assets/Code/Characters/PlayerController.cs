@@ -1,9 +1,19 @@
 using System;
+using DarkSouls.Animation;
+using DarkSouls.Characters;
+using DarkSouls.UI;
 using UnityEngine;
 
+/// <summary>
+/// Centralized class that is responsible for bridging the gap between game components and the player.
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
     private Animator _animator;
+    private AnimationHandler _animationHandler;
+    private CharacterAttributes _characterAttributes;
+    private UIController _ui;
+    
     private readonly int _isInteractingHash = Animator.StringToHash("isInteracting");
     private bool _isInteracting;
     private bool _canRotate = true;
@@ -57,6 +67,11 @@ public class PlayerController : MonoBehaviour
     public bool IsGrounded { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating that the player has been hit by something and is reacting to it via animation.
+    /// </summary>
+    public bool IsImpacted { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating that the player is sprinting.
     /// </summary>
     public bool IsSprinting { get; set; }
@@ -85,6 +100,11 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         _animator = GetComponentInChildren<Animator>();
+        _animationHandler = GetComponent<AnimationHandler>();
+        _characterAttributes = GetComponent<CharacterAttributes>();
+        _ui = GetComponent<UIController>();
+
+        InitializePlayer();
     }
 
     // Update is called once per frame
@@ -108,13 +128,55 @@ public class PlayerController : MonoBehaviour
 
     public void FinishInteractiveAnimation()
     {
-        if (OnInteractingAnimationCompleteDoThis == null)
-        {
-            Debug.Log("PlayerController :: FinishInteractiveAnimation action not set.  This is fine to ignore on the very start of the game as Enter State fires this off.  Otherwise if you see this any time after, this needs checked.");
-            return;
-        }
-
+        //initial game state will fire this off since it happens on Enter of Empty
+        //some animations like falling just enter the enter state and do nothing with this action so it will also be null on that case
+        if (OnInteractingAnimationCompleteDoThis == null) return;
+        
         OnInteractingAnimationCompleteDoThis.Invoke();
         OnInteractingAnimationCompleteDoThis = null;
+    }
+
+    /// <summary>
+    /// Damages the character for the value passed.
+    /// </summary>
+    /// <param name="damage"></param>
+    public void DamageCharacter(int damage)
+    {
+        _characterAttributes.DamageCharacter(damage);
+        _ui.SetHealthBarValue(_characterAttributes.CurrentHealth);
+
+        if (_characterAttributes.CurrentHealth > 0)
+        {
+            RespondToImpactHit();
+        }
+        else
+        {
+            KillCharacter();
+        }
+    }
+
+    private void InitializePlayer()
+    {
+        _ui.SetHealthBarMaximum(_characterAttributes.MaximumHealth);
+        _ui.SetHealthBarValue(_characterAttributes.CurrentHealth);
+    }
+
+    private void RespondToImpactHit()
+    {
+        //todo this will always impact from the front, will need to figure out what weapons used, and direction of attack
+        _animationHandler.PlayTargetAnimation(AnimationHandler.ONE_HANDED_IMPACT_FRONT_STEPBACK_01, isInteractingAnimation: true);
+        IsImpacted = true;
+        OnInteractingAnimationCompleteDoThis = () =>
+        {
+            IsImpacted = false;
+            _animationHandler.FinishInteractionAnimation();
+        };
+    }
+
+    private void KillCharacter()
+    {
+        //todo this always will run death01 with one hand.  Will need to figure out weapons and direction of attack
+        //and even figure out if you can mix ragdoll with the animation
+        _animationHandler.PlayTargetAnimation(AnimationHandler.ONE_HANDED_DEATH_01, isInteractingAnimation: true);
     }
 }

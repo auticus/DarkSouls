@@ -44330,14 +44330,16 @@ GameObject:
   - component: {fileID: 4830839913021900416}
   - component: {fileID: 8561707320779888328}
   - component: {fileID: 3256151380229084254}
+  - component: {fileID: 7210345626417286088}
   - component: {fileID: 6551292130420177035}
   - component: {fileID: 4301015686137869072}
   - component: {fileID: 3696229511556682033}
   - component: {fileID: 685054494877594491}
+  - component: {fileID: 4745052763907778445}
   - component: {fileID: 2420200900932570450}
   m_Layer: 0
   m_Name: Knight
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44434,6 +44436,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d03d176c22340394ca9ff695c6554da9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7210345626417286088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3092354701724142612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d886bc60ee5f476469557c7539190a50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Constitution>k__BackingField: 10
+  <MaximumHealth>k__BackingField: 0
+  <CurrentHealth>k__BackingField: 0
 --- !u!114 &6551292130420177035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44491,6 +44508,18 @@ MonoBehaviour:
   groundDetectionRayStartPoint: 0.5
   groundDetectionRayOffset: 0.2
   minDistanceNeededToBeginFallAnimation: 1
+--- !u!114 &4745052763907778445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3092354701724142612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9795942d8d7324f42accb2882525c1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2420200900932570450
 MonoBehaviour:
   m_ObjectHideFlags: 0
