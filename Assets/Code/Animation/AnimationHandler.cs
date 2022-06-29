@@ -14,7 +14,7 @@ namespace DarkSouls.Animation
         public const string ONE_HANDED_DEATH_01 = "oh_death_01";
         
         private readonly int _verticalHash = Animator.StringToHash("Vertical");
-        private int _horizontalHash = Animator.StringToHash("Horizontal");
+        private readonly int _horizontalHash = Animator.StringToHash("Horizontal");
 
         private ICharacterController _playerController;
         private Animator _animator;
@@ -48,7 +48,7 @@ namespace DarkSouls.Animation
         public void PlayTargetAnimation(string animation, bool isInteractingAnimation)
         {
             _animator.applyRootMotion = isInteractingAnimation;
-            _playerController.IsInteracting = isInteractingAnimation;
+            _playerController.State.IsInteracting = isInteractingAnimation;
             _animator.CrossFade(animation, ANIMATION_CROSSFADE_DAMPING);
         }
 
@@ -57,7 +57,7 @@ namespace DarkSouls.Animation
         /// </summary>
         public void FinishInteractionAnimation()
         {
-            _playerController.IsInteracting = false;
+            _playerController.State.IsInteracting = false;
         }
 
         private void OnAnimatorMove()
@@ -65,7 +65,7 @@ namespace DarkSouls.Animation
             //this helps sync animations so that they do not sink into the ground
             //otherwise your rolling or whatever animations will partially submerge into the ground and look stupid.
             
-            if (_playerController.IsInteracting == false) return;
+            if (_playerController.State.IsInteracting == false) return;
             var deltaTime = Time.deltaTime;
             _playerBody.drag = 0;
 

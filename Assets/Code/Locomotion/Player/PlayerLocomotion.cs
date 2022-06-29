@@ -51,7 +51,7 @@ namespace DarkSouls.Locomotion.Player
                 _playerTransform,
                 _rigidBody);
 
-            _playerController.IsGrounded = true;
+            _playerController.State.IsGrounded = true;
         }
 
         void Update()
@@ -88,21 +88,21 @@ namespace DarkSouls.Locomotion.Player
 
         private void HandleMovement()
         {
-            if (_playerController.IsInteracting || _playerController.IsRolling) return;
+            if (_playerController.State.IsInteracting || _playerController.State.IsRolling) return;
 
-            var velocity = _moveDirection * (_playerController.IsSprinting ? sprintSpeed : movementSpeed);
+            var velocity = _moveDirection * (_playerController.State.IsSprinting ? sprintSpeed : movementSpeed);
             _rigidBody.velocity = Vector3.ProjectOnPlane(velocity, Vector3.zero);
         }
 
         private void HandleFreeLookAnimations()
         {
             var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
-            _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _playerController.IsSprinting);
+            _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _playerController.State.IsSprinting);
         }
 
         private void HandleRotation(float deltaTime)
         {
-            if (!_playerController.CanRotate) return;
+            if (!_playerController.State.CanRotate) return;
 
             var targetVector = Vector3.zero;
 
@@ -133,7 +133,7 @@ namespace DarkSouls.Locomotion.Player
         private void InputHandlerOnInputRoll()
         {
             //When the Roll button is pressed it will either Roll or if no direction was given it will back step the player
-            if (_playerController.IsInteracting) return;
+            if (_playerController.State.IsInteracting) return;
             var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
             var movementThresholdToSprint = 0.5f;
 
@@ -145,7 +145,7 @@ namespace DarkSouls.Locomotion.Player
             {
                 _rollDirection = GetXZMoveDirectionFromInput();
                 _rollButtonPressedTime = 0;
-                _playerController.RollButtonInvoked = true;
+                _playerController.State.RollButtonInvoked = true;
             }
         }
 
@@ -155,14 +155,14 @@ namespace DarkSouls.Locomotion.Player
             //_rigidBody.velocity = moveDirection * movementSpeed;
             _rigidBody.AddForce(moveDirection * movementSpeed, ForceMode.Acceleration);
             _animationHandler.PlayTargetAnimation(AnimationHandler.BACKSTEP_ANIMATION, isInteractingAnimation: true);
-            _playerController.IsBackStepping = true;
+            _playerController.State.IsBackStepping = true;
             _playerController.OnInteractingAnimationCompleteDoThis = FinishBackStep;
         }
 
         private void DecideToRollOrSprint(float deltaTime)
         {
-            if (_playerController.IsRolling || _playerController.IsSprinting) return;
-            if (!_playerController.RollButtonInvoked) return;
+            if (_playerController.State.IsRolling || _playerController.State.IsSprinting) return;
+            if (!_playerController.State.RollButtonInvoked) return;
 
             //at this point the roll button had been invoked so we are just waiting to decide to roll or sprint
             if (_inputHandler.RollButtonPressed)
@@ -170,8 +170,8 @@ namespace DarkSouls.Locomotion.Player
                 _rollButtonPressedTime += deltaTime;
                 if (_rollButtonPressedTime > _rollButtonPressBeforeSprintInvoked)
                 {
-                    _playerController.IsSprinting = true; //handled in the movement code
-                    _playerController.RollButtonInvoked = false;
+                    _playerController.State.IsSprinting = true; //handled in the movement code
+                    _playerController.State.RollButtonInvoked = false;
                 }
 
                 return;
@@ -186,26 +186,26 @@ namespace DarkSouls.Locomotion.Player
             _animationHandler.PlayTargetAnimation(AnimationHandler.ROLLING_ANIMATION, isInteractingAnimation: true);
             var rollRotation = Quaternion.LookRotation(moveDirection);
             _playerTransform.rotation = rollRotation;
-            _playerController.IsRolling = true;
+            _playerController.State.IsRolling = true;
             _playerController.OnInteractingAnimationCompleteDoThis = FinishRolling;
         }
 
         private void DecideToEndSprint()
         {
-            if (!_playerController.IsSprinting) return;
-            if (!_inputHandler.RollButtonPressed) _playerController.IsSprinting = false;
+            if (!_playerController.State.IsSprinting) return;
+            if (!_inputHandler.RollButtonPressed) _playerController.State.IsSprinting = false;
         }
 
         private void FinishRolling()
         {
-            _playerController.IsRolling = false;
-            _playerController.RollButtonInvoked = false;
+            _playerController.State.IsRolling = false;
+            _playerController.State.RollButtonInvoked = false;
             _animationHandler.FinishInteractionAnimation();
         }
 
         private void FinishBackStep()
         {
-            _playerController.IsBackStepping = false;
+            _playerController.State.IsBackStepping = false;
             _animationHandler.FinishInteractionAnimation();
         }
 

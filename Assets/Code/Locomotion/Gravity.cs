@@ -96,7 +96,7 @@ namespace DarkSouls.Locomotion
         private void ApplyGravityForceToAerialCharacter(Vector3 moveDirection, float fallingSpeed)
         {
             const float ledgeBoostMultipler = 2.0f;
-            if (_characterController.IsAerial)
+            if (_characterController.State.IsAerial)
             {
                 _rigidBody.AddForce(-Vector3.up * fallingSpeed); //apply the falling speed down (again not realistic should be falling 9.8 m/s extra per turn until terminal velocity)
 
@@ -137,7 +137,7 @@ namespace DarkSouls.Locomotion
             //we hit the ground, we aren't falling, just put the position down on the ground
             var normalVector = groundPoint.normal; //TODO: keeping this unused because tutorial may use it later but this likely needs killed
             var targetPoint = groundPoint.point;
-            _characterController.IsGrounded = true;
+            _characterController.State.IsGrounded = true;
 
             targetPosition.y = targetPoint.y; //this helps bring the character position to the ground (but also needs the lift function as well)
             LandAerialCharacterIfNeeded(playerController);
@@ -150,14 +150,14 @@ namespace DarkSouls.Locomotion
         private void HandleAerialCharacter(float movementSpeed)
         {
             //change grounded flag to false if not already and then if not in an aerial state, make some changes to make the aerial state happen
-            if (_characterController.IsGrounded)
+            if (_characterController.State.IsGrounded)
             {
-                _characterController.IsGrounded = false;
+                _characterController.State.IsGrounded = false;
             }
 
-            if (_characterController.IsAerial) return;
+            if (_characterController.State.IsAerial) return;
             
-            if (!_characterController.IsInteracting)
+            if (!_characterController.State.IsInteracting)
             {
                 _animationHandler.PlayTargetAnimation(AnimationHandler.FALLING_ANIMATION, isInteractingAnimation: true);
             }
@@ -165,7 +165,7 @@ namespace DarkSouls.Locomotion
             var velocity = _rigidBody.velocity;
             velocity.Normalize();
             _rigidBody.velocity = velocity * (movementSpeed / 2);
-            _characterController.IsAerial = true;
+            _characterController.State.IsAerial = true;
         }
 
         /// <summary>
@@ -175,9 +175,9 @@ namespace DarkSouls.Locomotion
         /// <param name="targetPosition"></param>
         private void LiftCharacterToGroundIfGrounded(float totalNormalizedMovement, Vector3 targetPosition)
         {
-            if (_characterController.IsGrounded)
+            if (_characterController.State.IsGrounded)
             {
-                if (_characterController.IsInteracting || totalNormalizedMovement > 0)
+                if (_characterController.State.IsInteracting || totalNormalizedMovement > 0)
                 {
                     // EVIL CODE - if you don't divide the delta time by 0.1 the foot will sink into the ground on animations
                     // time.deltatime is a tiny number so dividing it by a fraction actually makes it bigger
@@ -194,10 +194,10 @@ namespace DarkSouls.Locomotion
 
         private void LandAerialCharacterIfNeeded(PlayerController playerController)
         {
-            if (_characterController.IsAerial)
+            if (_characterController.State.IsAerial)
             {
                 //we were in the air but now are about to land
-                if (_characterController.AerialTimer > inTheAirMinimumToLaunchAnimation)
+                if (_characterController.State.AerialTimer > inTheAirMinimumToLaunchAnimation)
                 {
                     playerController.OnInteractingAnimationCompleteDoThis = FinishLanding;
                     _animationHandler.PlayTargetAnimation(AnimationHandler.LANDING_ANIMATION, isInteractingAnimation: true);
@@ -208,8 +208,8 @@ namespace DarkSouls.Locomotion
                     //this takes us to the empty non-state in the animator.
                     _animationHandler.PlayTargetAnimation(AnimationHandler.EMPTY_ANIMATION, isInteractingAnimation: false);
                 }
-                _characterController.AerialTimer = 0;
-                _characterController.IsAerial = false;
+                _characterController.State.AerialTimer = 0;
+                _characterController.State.IsAerial = false;
             }
         }
     }

@@ -5,34 +5,9 @@ namespace DarkSouls.Characters
     public interface ICharacterController
     {
         /// <summary>
-        /// Gets or sets a value indicating how long the player has been in the air.
+        /// Model that holds all of the character's data state.
         /// </summary>
-        float AerialTimer { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating that the player is in the air.
-        /// </summary>
-        bool IsAerial { get; set; } //todo: why not just make this IsGrounded = false?
-
-        /// <summary>
-        /// Gets or sets a value indicating that the player is performing an attack with their right hand.
-        /// </summary>
-        bool IsAttacking { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating that the player is on the ground.
-        /// </summary>
-        bool IsGrounded { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating that the player is performing a heavy attack with their right hand.
-        /// </summary>
-        bool IsHeavyAttacking { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating if the animator is in an animation state that cannot be changed until completion.
-        /// </summary>
-        bool IsInteracting { get; set; }
+        CharacterState State { get; }
 
         /// <summary>
         /// Gets or sets an action that will execute when an interacting animation completes.

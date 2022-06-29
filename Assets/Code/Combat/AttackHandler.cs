@@ -28,7 +28,7 @@ namespace DarkSouls.Combat
         private void InputHandler_OnAttack()
         {
             _characterController.OnInteractingAnimationCompleteDoThis = FinishAttack;
-            _characterController.IsAttacking = true;
+            _characterController.State.IsAttacking = true;
             _animationHandler.PlayTargetAnimation(_inventory.RightHand.OneHandedLightAttack, isInteractingAnimation: true);
         }
 
@@ -36,14 +36,14 @@ namespace DarkSouls.Combat
         private void InputHandler_OnHeavyAttack()
         {
             _characterController.OnInteractingAnimationCompleteDoThis = FinishAttack;
-            _characterController.IsHeavyAttacking = true;
+            _characterController.State.IsHeavyAttacking = true;
             _animationHandler.PlayTargetAnimation(_inventory.RightHand.OneHandedHeavyAttack, isInteractingAnimation: true);
         }
 
         private void FinishAttack()
         {
-            _characterController.IsAttacking = false;
-            _characterController.IsHeavyAttacking = false;
+            _characterController.State.IsAttacking = false;
+            _characterController.State.IsHeavyAttacking = false;
             _animationHandler.FinishInteractionAnimation();
         }
     }

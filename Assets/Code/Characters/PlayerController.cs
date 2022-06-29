@@ -17,87 +17,35 @@ public class PlayerController : MonoBehaviour, ICharacterController
     private CharacterInventory _characterInventory;
     private WeaponSocketController _weaponSocketController;
     private UIController _ui;
-    
-    private readonly int _isInteractingHash = Animator.StringToHash("isInteracting");
-    private bool _isInteracting;
 
     /// <inheritdoc/>
-    public bool IsInteracting
-    {
-        get => _isInteracting;
-        set
-        {
-            _animator.SetBool(_isInteractingHash, value);
-            _isInteracting = value;
-        } 
-    }
-
-    /// <inheritdoc/>
-    public float AerialTimer { get; set; }
-
-    /// <summary>
-    /// Gets or set a value indicating that the player is rolling.
-    /// </summary>
-    public bool IsRolling { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating that the player is back stepping.
-    /// </summary>
-    public bool IsBackStepping { get; set; }
-
-    /// <inheritdoc/>
-    public bool IsAerial { get; set; } //todo: why not just make this IsGrounded = false?
-
-    /// <inheritdoc/>
-    public bool IsAttacking { get; set; }
-
-    /// <inheritdoc/>
-    public bool IsHeavyAttacking { get; set; }
-
-    /// <inheritdoc/>
-    public bool IsGrounded { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating that the player has been hit by something and is reacting to it via animation.
-    /// </summary>
-    public bool IsImpacted { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating that the player is sprinting.
-    /// </summary>
-    public bool IsSprinting { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating that the roll button was invoked.
-    /// </summary>
-    public bool RollButtonInvoked { get; set; }
-
-    /// <summary>
-    /// Gets a value indicating if the player in his current animation state may rotate.
-    /// </summary>
-    /// <returns></returns>
-    public bool CanRotate { get; set; } = true;
+    public CharacterState State { get; private set; }
 
     /// <inheritdoc/>
     public Action OnInteractingAnimationCompleteDoThis { get; set; }
 
-    // Start is called before the first frame update WHEN A SCRIPT IS ENABLED
-    void Start()
+    void Awake()
     {
         _animator = GetComponentInChildren<Animator>();
+        State = new CharacterState(_animator);
+
         _animationHandler = GetComponent<AnimationHandler>();
         _characterAttributes = GetComponent<CharacterAttributes>();
         _ui = GetComponent<UIController>();
         _characterInventory = GetComponent<CharacterInventory>();
         _weaponSocketController = GetComponent<WeaponSocketController>();
+    }
 
+    // Start is called before the first frame update WHEN A SCRIPT IS ENABLED
+    void Start()
+    {
         InitializePlayer();
     }
 
     // Update is called once per frame
     void Update()
     {
-        _isInteracting = _animator.GetBool(_isInteractingHash);
+        State.IsInteracting = _animator.GetBool(State.IsInteractingHash);
     }
 
     void LateUpdate()
@@ -106,10 +54,10 @@ public class PlayerController : MonoBehaviour, ICharacterController
          * Note in tutorial he sets all of the input handler flags explicitly to false but we let the input handler handle that and fire events accordingly
          */
 
-        if (IsAerial)
+        if (State.IsAerial)
         {
             //deviation: he has in air timer on the PlayerLocomotion component but I moved it here because locomotion doesn't care how long its in the air
-            AerialTimer += Time.deltaTime;
+            State.AerialTimer += Time.deltaTime;
         }
     }
 
@@ -167,10 +115,10 @@ public class PlayerController : MonoBehaviour, ICharacterController
     {
         //todo this will always impact from the front, will need to figure out what weapons used, and direction of attack
         _animationHandler.PlayTargetAnimation(AnimationHandler.ONE_HANDED_IMPACT_FRONT_STEPBACK_01, isInteractingAnimation: true);
-        IsImpacted = true;
+        State.IsImpacted = true;
         OnInteractingAnimationCompleteDoThis = () =>
         {
-            IsImpacted = false;
+            State.IsImpacted = false;
             _animationHandler.FinishInteractionAnimation();
         };
     }
@@ -195,7 +143,7 @@ public class PlayerController : MonoBehaviour, ICharacterController
     private Hand GetActiveAttackingHand()
     {
         //currently we only have right handed weapon, shield attacks etc have not yet been implemented
-        if (IsAttacking || IsHeavyAttacking) return Hand.Right;
+        if (State.IsAttacking || State.IsHeavyAttacking) return Hand.Right;
         return Hand.None;
     }
 }
