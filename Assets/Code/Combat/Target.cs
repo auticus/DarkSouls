@@ -8,11 +8,11 @@ namespace DarkSouls.Combat
     /// </summary>
     public class Target : MonoBehaviour
     {
-        private ICharacterController _character;
+        private PlayerController _character;
 
         private void Start()
         {
-            _character = GetComponent<ICharacterController>();
+            _character = GetComponent<PlayerController>();
         }
 
         public void HitTarget(int damage)

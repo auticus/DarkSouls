@@ -12,13 +12,13 @@ namespace DarkSouls.Locomotion
     {
         private const float inTheAirMinimumToLaunchAnimation = 0.5f;
         private readonly AnimationHandler _animationHandler;
-        private readonly ICharacterController _characterController;
+        private readonly PlayerController _characterController;
         private readonly Transform _characterTransform;
         private readonly LayerMask _ignoreLayerForGroundCheck;
         private readonly Rigidbody _rigidBody;
         
         public Gravity(AnimationHandler animationHandler,
-            ICharacterController characterController,
+            PlayerController characterController,
             Transform characterTransform,
             Rigidbody characterRigidBody)
         {

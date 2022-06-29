@@ -7,16 +7,16 @@ using DarkSouls.UI;
 using UnityEngine;
 
 /// <summary>
-/// Centralized class that is responsible for bridging the gap between game components and the player.
+/// Centralized class that is responsible for bridging the gap between game components and the character.
 /// </summary>
-public class PlayerController : MonoBehaviour, ICharacterController
+public class PlayerController : MonoBehaviour
 {
     private Animator _animator;
     private AnimationHandler _animationHandler;
     private CharacterAttributes _characterAttributes;
     private CharacterInventory _characterInventory;
     private WeaponSocketController _weaponSocketController;
-    private UIController _ui;
+    private UIController _ui; //this will only be on players
 
     /// <inheritdoc/>
     public CharacterState State { get; private set; }
@@ -77,7 +77,8 @@ public class PlayerController : MonoBehaviour, ICharacterController
     {
         Debug.Log($"I've been damaged for {damage}!");
         _characterAttributes.DamageCharacter(damage);
-        _ui.SetHealthBarValue(_characterAttributes.CurrentHealth);
+
+        if (_ui != null) _ui.SetHealthBarValue(_characterAttributes.CurrentHealth);
 
         if (_characterAttributes.CurrentHealth > 0)
         {
@@ -101,8 +102,11 @@ public class PlayerController : MonoBehaviour, ICharacterController
 
     private void InitializePlayer()
     {
-        _ui.SetHealthBarMaximum(_characterAttributes.MaximumHealth);
-        _ui.SetHealthBarValue(_characterAttributes.CurrentHealth);
+        if (_ui != null)
+        {
+            _ui.SetHealthBarMaximum(_characterAttributes.MaximumHealth);
+            _ui.SetHealthBarValue(_characterAttributes.CurrentHealth);
+        }
 
         _weaponSocketController.LoadRightHandSocketWithWeapon(_characterInventory.RightHand);
         _weaponSocketController.LoadLeftHandSocketWithWeapon(_characterInventory.LeftHand);

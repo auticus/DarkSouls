@@ -23,15 +23,14 @@ namespace DarkSouls.Combat
             if (other.CompareTag("Player"))
             {
                 if (!affectsPlayers) return;
-                var player = other.gameObject.GetComponent<PlayerController>();
-                player.DamageCharacter(damage);
             }
             else
             {
                 if (!affectsEnemies) return;
-                var character = other.gameObject.GetComponent<NonPlayerCharacterController>();
-                character.DamageCharacter(damage);
             }
+
+            var character = other.gameObject.GetComponent<PlayerController>();
+            character.DamageCharacter(damage);
         }
     }
 }

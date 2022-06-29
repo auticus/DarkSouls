@@ -16,7 +16,7 @@ namespace DarkSouls.Animation
         private readonly int _verticalHash = Animator.StringToHash("Vertical");
         private readonly int _horizontalHash = Animator.StringToHash("Horizontal");
 
-        private ICharacterController _playerController;
+        private PlayerController _playerController;
         private Animator _animator;
         private Rigidbody _playerBody;
         
@@ -27,7 +27,7 @@ namespace DarkSouls.Animation
         {
             _animator = GetComponent<Animator>();
             _playerBody = transform.GetComponent<Rigidbody>();
-            _playerController = transform.GetComponent<ICharacterController>();
+            _playerController = transform.GetComponent<PlayerController>();
         }
 
         public void UpdateFreelookMovementAnimation(float totalMovement, bool isSprinting)

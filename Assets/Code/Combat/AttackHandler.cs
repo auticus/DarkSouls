@@ -11,14 +11,14 @@ namespace DarkSouls.Combat
         private AnimationHandler _animationHandler;
         private InputHandler _inputHandler;
         private CharacterInventory _inventory;
-        private ICharacterController _characterController;
+        private PlayerController _characterController;
 
         private void Awake()
         {
             _animationHandler = GetComponent<AnimationHandler>();
             _inputHandler = GetComponent<InputHandler>();
             _inventory = GetComponent<CharacterInventory>();
-            _characterController = GetComponent<ICharacterController>();
+            _characterController = GetComponent<PlayerController>();
 
             _inputHandler.OnInputAttack += InputHandler_OnAttack;
             _inputHandler.OnInputHeavyAttack += InputHandler_OnHeavyAttack;
