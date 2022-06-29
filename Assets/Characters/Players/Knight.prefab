@@ -44335,6 +44335,7 @@ GameObject:
   - component: {fileID: 4301015686137869072}
   - component: {fileID: 3696229511556682033}
   - component: {fileID: 685054494877594491}
+  - component: {fileID: 3602895725366709501}
   - component: {fileID: 4745052763907778445}
   - component: {fileID: 2420200900932570450}
   m_Layer: 0
@@ -44508,6 +44509,18 @@ MonoBehaviour:
   groundDetectionRayStartPoint: 0.5
   groundDetectionRayOffset: 0.2
   minDistanceNeededToBeginFallAnimation: 1
+--- !u!114 &3602895725366709501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3092354701724142612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a1d323a56168d458f168aa3e6499b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4745052763907778445
 MonoBehaviour:
   m_ObjectHideFlags: 0

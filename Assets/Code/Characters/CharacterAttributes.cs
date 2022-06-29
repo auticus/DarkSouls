@@ -30,7 +30,7 @@ namespace DarkSouls.Characters
         [Tooltip("The current hit points the character has")]
         public int CurrentHealth { get; private set; }
 
-        private void Start()
+        private void Awake()
         {
             InitializeHitPoints();
         }

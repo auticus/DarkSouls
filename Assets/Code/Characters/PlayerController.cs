@@ -1,23 +1,26 @@
 using System;
 using DarkSouls.Animation;
 using DarkSouls.Characters;
+using DarkSouls.Combat;
+using DarkSouls.Inventory;
 using DarkSouls.UI;
 using UnityEngine;
 
 /// <summary>
 /// Centralized class that is responsible for bridging the gap between game components and the player.
 /// </summary>
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ICharacterController
 {
     private Animator _animator;
     private AnimationHandler _animationHandler;
     private CharacterAttributes _characterAttributes;
+    private CharacterInventory _characterInventory;
+    private WeaponSocketController _weaponSocketController;
     private UIController _ui;
     
     private readonly int _isInteractingHash = Animator.StringToHash("isInteracting");
     private bool _isInteracting;
-    private bool _canRotate = true;
-    
+
     /// <summary>
     /// Gets a value indicating if the animator is in an animation state that cannot be changed until completion.
     /// </summary>
@@ -85,11 +88,7 @@ public class PlayerController : MonoBehaviour
     /// Gets a value indicating if the player in his current animation state may rotate.
     /// </summary>
     /// <returns></returns>
-    public bool CanRotate
-    {
-        get => _canRotate;
-        set => _canRotate = value;
-    }
+    public bool CanRotate { get; set; } = true;
 
     /// <summary>
     /// Gets or sets an action that will execute when an interacting animation completes.
@@ -103,6 +102,8 @@ public class PlayerController : MonoBehaviour
         _animationHandler = GetComponent<AnimationHandler>();
         _characterAttributes = GetComponent<CharacterAttributes>();
         _ui = GetComponent<UIController>();
+        _characterInventory = GetComponent<CharacterInventory>();
+        _weaponSocketController = GetComponent<WeaponSocketController>();
 
         InitializePlayer();
     }
@@ -136,12 +137,11 @@ public class PlayerController : MonoBehaviour
         OnInteractingAnimationCompleteDoThis = null;
     }
 
-    /// <summary>
-    /// Damages the character for the value passed.
-    /// </summary>
-    /// <param name="damage"></param>
+    
+    /// <inheritdoc/>
     public void DamageCharacter(int damage)
     {
+        Debug.Log($"I've been damaged for {damage}!");
         _characterAttributes.DamageCharacter(damage);
         _ui.SetHealthBarValue(_characterAttributes.CurrentHealth);
 
@@ -155,10 +155,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void EnableAttackingWeaponCollider()
+    {
+        _weaponSocketController.SetColliderEnabledForWeapon(GetActiveAttackingHand(), enabled: true);
+    }
+
+    public void DisableAttackingWeaponCollider()
+    {
+        _weaponSocketController.SetColliderEnabledForWeapon(GetActiveAttackingHand(), enabled: false);
+    }
+
     private void InitializePlayer()
     {
         _ui.SetHealthBarMaximum(_characterAttributes.MaximumHealth);
         _ui.SetHealthBarValue(_characterAttributes.CurrentHealth);
+
+        _weaponSocketController.LoadRightHandSocketWithWeapon(_characterInventory.RightHand);
+        _weaponSocketController.LoadLeftHandSocketWithWeapon(_characterInventory.LeftHand);
+
+        _weaponSocketController.OnRightHandHit += RightHandHit;
+        _weaponSocketController.OnLeftHandHit += LeftHandHit;
     }
 
     private void RespondToImpactHit()
@@ -178,5 +194,22 @@ public class PlayerController : MonoBehaviour
         //todo this always will run death01 with one hand.  Will need to figure out weapons and direction of attack
         //and even figure out if you can mix ragdoll with the animation
         _animationHandler.PlayTargetAnimation(AnimationHandler.ONE_HANDED_DEATH_01, isInteractingAnimation: true);
+    }
+
+    private void RightHandHit(Target target)
+    {
+        target.HitTarget(_characterInventory.RightHand.BaseDamage);
+    }
+
+    private void LeftHandHit(Target target)
+    {
+        target.HitTarget(_characterInventory.LeftHand.BaseDamage);
+    }
+
+    private Hand GetActiveAttackingHand()
+    {
+        //currently we only have right handed weapon, shield attacks etc have not yet been implemented
+        if (IsAttacking || IsHeavyAttacking) return Hand.Right;
+        return Hand.None;
     }
 }

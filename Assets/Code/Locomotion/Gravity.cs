@@ -178,7 +178,11 @@ namespace DarkSouls.Locomotion
             {
                 if (_characterController.IsInteracting || totalNormalizedMovement > 0)
                 {
-                    _characterTransform.position = Vector3.Lerp(_characterTransform.position, targetPosition, Time.deltaTime);
+                    // EVIL CODE - if you don't divide the delta time by 0.1 the foot will sink into the ground on animations
+                    // time.deltatime is a tiny number so dividing it by a fraction actually makes it bigger
+                    // the end result here is that the lerp goes faster than if you just use time.deltatime (which will show the foot sinking)
+                    _characterTransform.position = Vector3.Lerp(_characterTransform.position, targetPosition,
+                        Time.deltaTime / 0.1f);  
                 }
                 else
                 {
