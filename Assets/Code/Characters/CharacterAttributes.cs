@@ -12,6 +12,11 @@ namespace DarkSouls.Characters
         private const int HEALTH_PIP_VALUE = 5;
 
         /// <summary>
+        /// Event that fires whenever the health of the player changed and sends the current health value.
+        /// </summary>
+        public event Action<int> OnCharacterHealthChanged;
+
+        /// <summary>
         /// Gets or sets a value that is how healthy the character is.
         /// </summary>
         [field: SerializeField]
@@ -45,6 +50,8 @@ namespace DarkSouls.Characters
 
             CurrentHealth -= damage;
             if (CurrentHealth < 0) CurrentHealth = 0;
+
+            OnCharacterHealthChanged?.Invoke(CurrentHealth);
         }
 
         private void InitializeHitPoints()

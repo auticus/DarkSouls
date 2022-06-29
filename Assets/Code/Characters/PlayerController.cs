@@ -16,12 +16,12 @@ public class PlayerController : MonoBehaviour
     private CharacterAttributes _characterAttributes;
     private CharacterInventory _characterInventory;
     private WeaponSocketController _weaponSocketController;
-    private UIController _ui; //this will only be on players
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// The character state data.
+    /// </summary>
     public CharacterState State { get; private set; }
 
-    /// <inheritdoc/>
     public Action OnInteractingAnimationCompleteDoThis { get; set; }
 
     void Awake()
@@ -31,7 +31,6 @@ public class PlayerController : MonoBehaviour
 
         _animationHandler = GetComponent<AnimationHandler>();
         _characterAttributes = GetComponent<CharacterAttributes>();
-        _ui = GetComponent<UIController>();
         _characterInventory = GetComponent<CharacterInventory>();
         _weaponSocketController = GetComponent<WeaponSocketController>();
     }
@@ -78,8 +77,6 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"I've been damaged for {damage}!");
         _characterAttributes.DamageCharacter(damage);
 
-        if (_ui != null) _ui.SetHealthBarValue(_characterAttributes.CurrentHealth);
-
         if (_characterAttributes.CurrentHealth > 0)
         {
             RespondToImpactHit();
@@ -102,12 +99,6 @@ public class PlayerController : MonoBehaviour
 
     private void InitializePlayer()
     {
-        if (_ui != null)
-        {
-            _ui.SetHealthBarMaximum(_characterAttributes.MaximumHealth);
-            _ui.SetHealthBarValue(_characterAttributes.CurrentHealth);
-        }
-
         _weaponSocketController.LoadRightHandSocketWithWeapon(_characterInventory.RightHand);
         _weaponSocketController.LoadLeftHandSocketWithWeapon(_characterInventory.LeftHand);
 
