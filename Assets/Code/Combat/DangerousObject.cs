@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DarkSouls.Characters;
+using UnityEngine;
 
 namespace DarkSouls.Combat
 {
@@ -28,7 +29,8 @@ namespace DarkSouls.Combat
             else
             {
                 if (!affectsEnemies) return;
-                //todo
+                var character = other.gameObject.GetComponent<NonPlayerCharacterController>();
+                character.DamageCharacter(damage);
             }
         }
     }

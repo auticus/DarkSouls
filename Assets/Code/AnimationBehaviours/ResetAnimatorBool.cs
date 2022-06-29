@@ -1,4 +1,4 @@
-using DarkSouls.Locomotion.Player;
+using DarkSouls.Characters;
 using UnityEngine;
 
 namespace DarkSouls.AnimationBehaviours
@@ -9,7 +9,7 @@ namespace DarkSouls.AnimationBehaviours
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             //this assumes the animator component on the player is on the same object as the PlayerLocomotion script
-            if (animator.transform.TryGetComponent(out PlayerController player))
+            if (animator.transform.TryGetComponent(out ICharacterController player))
             {
                 player.FinishInteractiveAnimation();
                 return;

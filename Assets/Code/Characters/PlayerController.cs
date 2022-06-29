@@ -21,9 +21,7 @@ public class PlayerController : MonoBehaviour, ICharacterController
     private readonly int _isInteractingHash = Animator.StringToHash("isInteracting");
     private bool _isInteracting;
 
-    /// <summary>
-    /// Gets a value indicating if the animator is in an animation state that cannot be changed until completion.
-    /// </summary>
+    /// <inheritdoc/>
     public bool IsInteracting
     {
         get => _isInteracting;
@@ -34,9 +32,7 @@ public class PlayerController : MonoBehaviour, ICharacterController
         } 
     }
 
-    /// <summary>
-    /// Gets or sets a value indicating how long the player has been in the air.
-    /// </summary>
+    /// <inheritdoc/>
     public float AerialTimer { get; set; }
 
     /// <summary>
@@ -49,24 +45,16 @@ public class PlayerController : MonoBehaviour, ICharacterController
     /// </summary>
     public bool IsBackStepping { get; set; }
 
-    /// <summary>
-    /// Gets or sets a value indicating that the player is in the air.
-    /// </summary>
+    /// <inheritdoc/>
     public bool IsAerial { get; set; } //todo: why not just make this IsGrounded = false?
 
-    /// <summary>
-    /// Gets or sets a value indicating that the player is performing an attack with their right hand.
-    /// </summary>
+    /// <inheritdoc/>
     public bool IsAttacking { get; set; }
 
-    /// <summary>
-    /// Gets or sets a value indicating that the player is performing a heavy attack with their right hand.
-    /// </summary>
+    /// <inheritdoc/>
     public bool IsHeavyAttacking { get; set; }
 
-    /// <summary>
-    /// Gets or sets a value indicating that the player is on the ground.
-    /// </summary>
+    /// <inheritdoc/>
     public bool IsGrounded { get; set; }
 
     /// <summary>
@@ -90,10 +78,8 @@ public class PlayerController : MonoBehaviour, ICharacterController
     /// <returns></returns>
     public bool CanRotate { get; set; } = true;
 
-    /// <summary>
-    /// Gets or sets an action that will execute when an interacting animation completes.
-    /// </summary>
-    public Action OnInteractingAnimationCompleteDoThis;
+    /// <inheritdoc/>
+    public Action OnInteractingAnimationCompleteDoThis { get; set; }
 
     // Start is called before the first frame update WHEN A SCRIPT IS ENABLED
     void Start()

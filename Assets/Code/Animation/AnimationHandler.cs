@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DarkSouls.Characters;
+using UnityEngine;
 
 namespace DarkSouls.Animation
 {
@@ -15,7 +16,7 @@ namespace DarkSouls.Animation
         private readonly int _verticalHash = Animator.StringToHash("Vertical");
         private int _horizontalHash = Animator.StringToHash("Horizontal");
 
-        private PlayerController _playerController;
+        private ICharacterController _playerController;
         private Animator _animator;
         private Rigidbody _playerBody;
         
@@ -26,7 +27,7 @@ namespace DarkSouls.Animation
         {
             _animator = GetComponent<Animator>();
             _playerBody = transform.GetComponent<Rigidbody>();
-            _playerController = transform.GetComponent<PlayerController>();
+            _playerController = transform.GetComponent<ICharacterController>();
         }
 
         public void UpdateFreelookMovementAnimation(float totalMovement, bool isSprinting)
@@ -61,9 +62,9 @@ namespace DarkSouls.Animation
 
         private void OnAnimatorMove()
         {
-            // sync up the camera to the player if they are performing an interactive move
-            // as root motion will move the player away from the camera
-            // todo: not convinced this is needed with the cinemachine
+            //this helps sync animations so that they do not sink into the ground
+            //otherwise your rolling or whatever animations will partially submerge into the ground and look stupid.
+            
             if (_playerController.IsInteracting == false) return;
             var deltaTime = Time.deltaTime;
             _playerBody.drag = 0;
@@ -73,6 +74,7 @@ namespace DarkSouls.Animation
 
             var velocity = deltaPosition / deltaTime;
             _playerBody.velocity = velocity;
+            
         }
     }
 }

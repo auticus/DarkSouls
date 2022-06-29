@@ -26,15 +26,18 @@ namespace DarkSouls.Inventory
                 if (socket.LeftHandSocket) _leftHand = socket;
                 else if (socket.RightHandSocket) _rightHand = socket;
             }
+
+            if (_leftHand == null) Debug.LogError("WeaponSocketController could not find a socket in the left hand - add it to your model");
+            if (_rightHand == null) Debug.LogError("WeaponSocketController could not find a socket in the right hand - add it to your model");
         }
 
-        public void LoadRightHandSocketWithWeapon(Weapon weapon)
+        public void LoadLeftHandSocketWithWeapon(Weapon weapon)
         {
             _leftHand.LoadWeaponModel(weapon);
             RegisterWeaponSocketCollider(_leftHand, ref _leftHandCollider);
         }
 
-        public void LoadLeftHandSocketWithWeapon(Weapon weapon)
+        public void LoadRightHandSocketWithWeapon(Weapon weapon)
         {
             _rightHand.LoadWeaponModel(weapon);
             RegisterWeaponSocketCollider(_rightHand, ref _rightHandCollider);
