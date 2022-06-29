@@ -31,9 +31,11 @@ namespace DarkSouls.Characters
         /// <summary>
         /// Gets a value indicating what the current hit points of the character is.
         /// </summary>
+        /// a better way would be to fire off the health changed in the setter but if you do that Unity
+        /// will not let you serialize the field so it will not show up in the designer.
         [field: SerializeField]
         [Tooltip("The current hit points the character has")]
-        public int CurrentHealth { get; private set; }
+        public int CurrentHealth { get; set; } 
 
         private void Awake()
         {
@@ -50,7 +52,6 @@ namespace DarkSouls.Characters
 
             CurrentHealth -= damage;
             if (CurrentHealth < 0) CurrentHealth = 0;
-
             OnCharacterHealthChanged?.Invoke(CurrentHealth);
         }
 
