@@ -12,10 +12,11 @@ namespace DarkSouls.Characters
 
         public readonly int IsInteractingHash = Animator.StringToHash("isInteracting");
 
-        public CharacterState(Animator animator)
-        {
-            _animator = animator;
-        }
+        /// <summary>
+        /// Gets a value indicating if the player in his current animation state may rotate.
+        /// </summary>
+        /// <returns></returns>
+        public bool CanRotate { get; set; } = true;
 
         /// <summary>
         /// Gets a value indicating if the animator is in an animation state that cannot be changed until completion.
@@ -36,14 +37,9 @@ namespace DarkSouls.Characters
         public float AerialTimer { get; set; }
 
         /// <summary>
-        /// Gets or set a value indicating that the player is rolling.
+        /// Gets or sets a value indicating that the character can launch into a combo attack if their attack chain has a successive attack animation.
         /// </summary>
-        public bool IsRolling { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating that the player is back stepping.
-        /// </summary>
-        public bool IsBackStepping { get; set; }
+        public bool IsAbleToCombo { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating that the player is in the air.
@@ -56,9 +52,9 @@ namespace DarkSouls.Characters
         public bool IsAttacking { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating that the player is performing a heavy attack with their right hand.
+        /// Gets or sets a value indicating that the player is back stepping.
         /// </summary>
-        public bool IsHeavyAttacking { get; set; }
+        public bool IsBackStepping { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating that the player is on the ground.
@@ -66,9 +62,19 @@ namespace DarkSouls.Characters
         public bool IsGrounded { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating that the player is performing a heavy attack with their right hand.
+        /// </summary>
+        public bool IsHeavyAttacking { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating that the player has been hit by something and is reacting to it via animation.
         /// </summary>
         public bool IsImpacted { get; set; }
+
+        /// <summary>
+        /// Gets or set a value indicating that the player is rolling.
+        /// </summary>
+        public bool IsRolling { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating that the player is sprinting.
@@ -80,10 +86,9 @@ namespace DarkSouls.Characters
         /// </summary>
         public bool RollButtonInvoked { get; set; }
 
-        /// <summary>
-        /// Gets a value indicating if the player in his current animation state may rotate.
-        /// </summary>
-        /// <returns></returns>
-        public bool CanRotate { get; set; } = true;
+        public CharacterState(Animator animator)
+        {
+            _animator = animator;
+        }
     }
 }

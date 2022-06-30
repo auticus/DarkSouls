@@ -58,6 +58,7 @@ namespace DarkSouls.Animation
         public void FinishInteractionAnimation()
         {
             _playerController.State.IsInteracting = false;
+            _playerController.State.IsAbleToCombo = false;
         }
 
         private void OnAnimatorMove()

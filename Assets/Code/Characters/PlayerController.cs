@@ -3,7 +3,6 @@ using DarkSouls.Animation;
 using DarkSouls.Characters;
 using DarkSouls.Combat;
 using DarkSouls.Inventory;
-using DarkSouls.UI;
 using UnityEngine;
 
 /// <summary>
@@ -60,6 +59,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Finalizer method for interactive animations.
+    /// </summary>
     public void FinishInteractiveAnimation()
     {
         //initial game state will fire this off since it happens on Enter of Empty
@@ -71,7 +73,10 @@ public class PlayerController : MonoBehaviour
     }
 
     
-    /// <inheritdoc/>
+    /// <summary>
+    /// Will damage the character by the amount passed in.
+    /// </summary>
+    /// <param name="damage"></param>
     public void DamageCharacter(int damage)
     {
         Debug.Log($"I've been damaged for {damage}!");
@@ -87,14 +92,36 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called by animator control to enable the weapon collider.
+    /// </summary>
     public void EnableAttackingWeaponCollider()
     {
         _weaponSocketController.SetColliderEnabledForWeapon(GetActiveAttackingHand(), enabled: true);
     }
 
+    /// <summary>
+    /// Called by animator control to disable the weapon collider.
+    /// </summary>
     public void DisableAttackingWeaponCollider()
     {
         _weaponSocketController.SetColliderEnabledForWeapon(GetActiveAttackingHand(), enabled: false);
+    }
+
+    /// <summary>
+    /// Called by the animator control to enable combo availability.
+    /// </summary>
+    public void EnableComboAvailability()
+    {
+        State.IsAbleToCombo = true;
+    }
+
+    /// <summary>
+    /// Called by the animator control to disable combo availability.
+    /// </summary>
+    public void DisableComboAvailability()
+    {
+        State.IsAbleToCombo = false;
     }
 
     private void InitializePlayer()

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using DarkSouls.Combat;
+using UnityEngine;
 
 namespace DarkSouls.Inventory
 {
@@ -9,9 +11,11 @@ namespace DarkSouls.Inventory
         public bool IsUnarmed;
         public int BaseDamage;
 
-        [Header("One Handed Attack Animations")]
-        public string OneHandedLightAttack;
-
-        public string OneHandedHeavyAttack;
+        [Header("Animation Details")]
+        [field:SerializeField]
+        public List<AttackAnimation> LightAttackAnimations = new List<AttackAnimation>();
+        
+        [field: SerializeField]
+        public List<AttackAnimation> HeavyAttackAnimations = new List<AttackAnimation>();
     }
 }

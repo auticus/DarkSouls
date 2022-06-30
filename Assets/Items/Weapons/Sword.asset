@@ -18,5 +18,11 @@ MonoBehaviour:
     type: 3}
   IsUnarmed: 0
   BaseDamage: 5
-  OneHandedLightAttack: oh_light_attack_01
-  OneHandedHeavyAttack: oh_heavy_attack_01
+  LightAttackAnimations:
+  - <AnimationName>k__BackingField: oh_light_attack_01
+    <DamageMultiplier>k__BackingField: 1
+  - <AnimationName>k__BackingField: oh_light_attack_02
+    <DamageMultiplier>k__BackingField: 1
+  HeavyAttackAnimations:
+  - <AnimationName>k__BackingField: oh_heavy_attack_01
+    <DamageMultiplier>k__BackingField: 1
