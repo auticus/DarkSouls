@@ -26,3 +26,5 @@ MonoBehaviour:
   HeavyAttackAnimations:
   - <AnimationName>k__BackingField: oh_heavy_attack_01
     <DamageMultiplier>k__BackingField: 1
+  <RightHandIdle>k__BackingField: Right_Arm_Idle_01
+  <LeftHandIdle>k__BackingField: Left_Arm_Idle_01

@@ -12,6 +12,8 @@ namespace DarkSouls.Animation
         public const string FALLING_ANIMATION = "Falling";
         public const string ONE_HANDED_IMPACT_FRONT_STEPBACK_01 = "oh_hit_front_stepback_01";
         public const string ONE_HANDED_DEATH_01 = "oh_death_01";
+        public const string RIGHT_ARM_IDLE_EMPTY = "Right Arm Empty";
+        public const string LEFT_ARM_IDLE_EMPTY = "Left Arm Empty";
         
         private readonly int _verticalHash = Animator.StringToHash("Vertical");
         private readonly int _horizontalHash = Animator.StringToHash("Horizontal");

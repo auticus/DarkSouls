@@ -17,5 +17,11 @@ namespace DarkSouls.Inventory
         
         [field: SerializeField]
         public List<AttackAnimation> HeavyAttackAnimations = new List<AttackAnimation>();
+
+        [field: SerializeField]
+        public string RightHandIdle { get; set; }
+
+        [field: SerializeField]
+        public string LeftHandIdle { get; set; }
     }
 }
