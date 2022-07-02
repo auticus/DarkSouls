@@ -47,7 +47,6 @@ namespace DarkSouls.Inventory
             _rightHand.LoadWeaponModel(weapon);
             RegisterWeaponSocketCollider(_rightHand, ref _rightHandCollider);
 
-            Debug.Log($"Cross fading animation {weapon.RightHandIdle}");
             _animator.CrossFade(weapon != null ? weapon.RightHandIdle : AnimationHandler.RIGHT_ARM_IDLE_EMPTY, 0.2f);
         }
 

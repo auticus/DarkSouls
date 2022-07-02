@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Debug = UnityEngine.Debug;
 
 namespace DarkSouls.Input
 {
@@ -13,6 +15,8 @@ namespace DarkSouls.Input
         public bool RollButtonPressed { get; private set; }
         public bool AttackButtonPressed { get; private set; }
         public bool HeavyAttackButtonPressed { get; private set; }
+        public bool RightHandCyclePressed { get; private set; }
+        public bool LeftHandCyclePressed { get; private set; }
 
         /// <summary>
         /// Fires when the Roll button is invoked.
@@ -28,6 +32,16 @@ namespace DarkSouls.Input
         /// Fires when the Heavy Attack button is pressed.
         /// </summary>
         public event Action OnInputHeavyAttack;
+
+        /// <summary>
+        /// Fires when the right hand cycle button is pressed.
+        /// </summary>
+        public event Action OnInputCycleRightHand;
+
+        /// <summary>
+        /// Fires when the left hand cycle button is pressed.
+        /// </summary>
+        public event Action OnInputCycleLeftHand;
 
         private PlayerControls _inputActions;
         
@@ -47,6 +61,7 @@ namespace DarkSouls.Input
             _inputActions.PlayerMovement.Disable();
         }
 
+        #region Interface Events from Input Controller
         public void OnMovement(InputAction.CallbackContext context)
         {
             MovementInput = context.action.ReadValue<Vector2>();
@@ -58,45 +73,33 @@ namespace DarkSouls.Input
         }
 
         public void OnRoll(InputAction.CallbackContext context)
-        {
-            if (context.performed)
-            {
-                RollButtonPressed = true;
-                OnInputRoll?.Invoke();
-            }
-
-            if (context.canceled)
-            {
-                RollButtonPressed = false;
-            }
-        }
-
+            => ProcessInputEvent(context, value => RollButtonPressed = value, ref OnInputRoll);
+        
         public void OnAttack(InputAction.CallbackContext context)
-        {
-            if (context.performed)
-            {
-                AttackButtonPressed = true;
-                OnInputAttack?.Invoke();
-            }
-
-            if (context.canceled)
-            {
-                AttackButtonPressed = false;
-            }
-        }
-
+            => ProcessInputEvent(context, value => AttackButtonPressed = value, ref OnInputAttack);
+        
         public void OnHeavyAttack(InputAction.CallbackContext context)
+            => ProcessInputEvent(context, value => HeavyAttackButtonPressed = value, ref OnInputHeavyAttack);
+
+        public void OnCycleRightHand(InputAction.CallbackContext context)
+            => ProcessInputEvent(context, value => RightHandCyclePressed = value, ref OnInputCycleRightHand);
+
+        public void OnCycleLeftHand(InputAction.CallbackContext context)
+            => ProcessInputEvent(context, value => LeftHandCyclePressed = value, ref OnInputCycleLeftHand);
+
+        private void ProcessInputEvent(InputAction.CallbackContext context, Action<bool> boolFlagProccessingDirective, ref Action eventAction)
         {
             if (context.performed)
             {
-                HeavyAttackButtonPressed = true;
-                OnInputHeavyAttack?.Invoke();
+                boolFlagProccessingDirective(true);
+                eventAction?.Invoke();
             }
 
             if (context.canceled)
             {
-                HeavyAttackButtonPressed = false;
+                boolFlagProccessingDirective(false);
             }
         }
+        #endregion
     }
 }

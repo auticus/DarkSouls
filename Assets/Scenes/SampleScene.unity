@@ -71482,6 +71482,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RightHand: {fileID: 0}
   LeftHand: {fileID: 0}
+  RightHandWeaponSlots:
+  - {fileID: 0}
+  - {fileID: 0}
+  LeftHandWeaponSlots:
+  - {fileID: 0}
+  - {fileID: 0}
+  UnarmedWeapon: {fileID: 0}
 --- !u!114 &4730695234557440831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71520,11 +71527,21 @@ PrefabInstance:
         type: 3}
       propertyPath: LeftHand
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 348313933026123466, guid: eb77df152aa1afe4d84a765e907d36cc,
+        type: 3}
+      propertyPath: RightHand
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 348313933026123466, guid: eb77df152aa1afe4d84a765e907d36cc,
+        type: 3}
+      propertyPath: LeftHandWeaponSlots.Array.data[0]
+      value: 
       objectReference: {fileID: 11400000, guid: 30738f2f36d66bc42bbe3ce6cee94217,
         type: 2}
     - target: {fileID: 348313933026123466, guid: eb77df152aa1afe4d84a765e907d36cc,
         type: 3}
-      propertyPath: RightHand
+      propertyPath: RightHandWeaponSlots.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: 30738f2f36d66bc42bbe3ce6cee94217,
         type: 2}
