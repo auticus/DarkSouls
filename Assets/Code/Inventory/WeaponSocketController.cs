@@ -19,6 +19,8 @@ namespace DarkSouls.Inventory
 
         public event Action<Target> OnRightHandHit;
         public event Action<Target> OnLeftHandHit;
+        public event Action<Weapon> OnRightHandWeaponChanged;
+        public event Action<Weapon> OnLeftHandWeaponChanged;
 
         private void Awake()
         {
@@ -38,6 +40,7 @@ namespace DarkSouls.Inventory
         {
             _leftHand.LoadWeaponModel(weapon);
             RegisterWeaponSocketCollider(_leftHand, ref _leftHandCollider);
+            OnLeftHandWeaponChanged?.Invoke(weapon);
 
             _animator.CrossFade(weapon != null ? weapon.LeftHandIdle : AnimationHandler.LEFT_ARM_IDLE_EMPTY, 0.2f);
         }
@@ -46,6 +49,7 @@ namespace DarkSouls.Inventory
         {
             _rightHand.LoadWeaponModel(weapon);
             RegisterWeaponSocketCollider(_rightHand, ref _rightHandCollider);
+            OnRightHandWeaponChanged?.Invoke(weapon);
 
             _animator.CrossFade(weapon != null ? weapon.RightHandIdle : AnimationHandler.RIGHT_ARM_IDLE_EMPTY, 0.2f);
         }

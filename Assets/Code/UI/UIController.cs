@@ -1,4 +1,5 @@
 ﻿using DarkSouls.Characters;
+using DarkSouls.Inventory;
 using UnityEngine;
 
 namespace DarkSouls.UI
@@ -9,7 +10,9 @@ namespace DarkSouls.UI
     public class UIController : MonoBehaviour
     {
         private Healthbar _healthBar;
+        private QuickSlots _quickSlots;
         private CharacterAttributes _characterAttributes;
+        private WeaponSocketController _weaponSocketController;
 
         private void Awake()
         {
@@ -19,10 +22,16 @@ namespace DarkSouls.UI
         private void Start()
         {
             // health bar will reside on a canvas object outside of the player hierarchy.
-            _healthBar = FindObjectOfType<Healthbar>(); //very inefficient method
+            _healthBar = FindObjectOfType<Healthbar>(); //very inefficient method but there should only be one of these on the ui canvas
+            _quickSlots = FindObjectOfType<QuickSlots>(); //same comment for healthbar.
+
             _characterAttributes.OnCharacterHealthChanged += OnCharacterHealthChanged;
             SetHealthBarMaximum(_characterAttributes.MaximumHealth);
             SetHealthBarValue(_characterAttributes.CurrentHealth);
+
+            _weaponSocketController = GetComponent<WeaponSocketController>();
+            _weaponSocketController.OnRightHandWeaponChanged += WeaponSocketController_OnRightHandWeaponChanged;
+            _weaponSocketController.OnLeftHandWeaponChanged += WeaponSocketController_OnLeftHandWeaponChanged;
         }
 
         /// <summary>
@@ -53,6 +62,16 @@ namespace DarkSouls.UI
         private void OnCharacterHealthChanged(int currentHealth)
         {
             SetHealthBarValue(currentHealth);
+        }
+
+        private void WeaponSocketController_OnRightHandWeaponChanged(Weapon weapon)
+        {
+            _quickSlots.UpdateRightHandSlotIcon(weapon);
+        }
+
+        private void WeaponSocketController_OnLeftHandWeaponChanged(Weapon weapon)
+        {
+            _quickSlots.UpdateLeftHandSlotIcon(weapon);
         }
     }
 }
