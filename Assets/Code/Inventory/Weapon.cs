@@ -18,10 +18,18 @@ namespace DarkSouls.Inventory
         [field: SerializeField]
         public List<AttackAnimation> HeavyAttackAnimations = new List<AttackAnimation>();
 
+        [Header("Idle Animations")] 
         [field: SerializeField]
-        public string RightHandIdle { get; set; }
+        public string RightHandIdle;
 
+        [field: SerializeField] 
+        public string LeftHandIdle;
+
+        [Header("Stamina")] 
         [field: SerializeField]
-        public string LeftHandIdle { get; set; }
+        public int BaseStaminaCost;
+
+        [field: SerializeField] 
+        public float HeavyAttackStaminaMultiplier;
     }
 }

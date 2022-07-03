@@ -61,6 +61,46 @@ namespace DarkSouls.Inventory
             }
         }
 
+        /// <summary>
+        /// Gets the stamina cost for using what is equipped in the right hand.
+        /// </summary>
+        public int GetRightHandStaminaDrain(bool isHeavyAttack)
+        {
+            var staminaDrain = 0;
+            if (RightHand == null)
+            {
+                staminaDrain = UnarmedWeapon.BaseStaminaCost;
+                if (isHeavyAttack) staminaDrain = Mathf.CeilToInt(staminaDrain * UnarmedWeapon.HeavyAttackStaminaMultiplier);
+            }
+            else
+            {
+                staminaDrain = RightHand.BaseStaminaCost;
+                if (isHeavyAttack) staminaDrain = Mathf.CeilToInt(staminaDrain * RightHand.HeavyAttackStaminaMultiplier);
+            }
+
+            return staminaDrain;
+        }
+
+        /// <summary>
+        /// Gets the stamina cost for using what is equipped in the left hand.
+        /// </summary>
+        public int GetLeftHandStaminaDrain(bool isHeavyAttack)
+        {
+            var staminaDrain = 0;
+            if (LeftHand == null)
+            {
+                staminaDrain = UnarmedWeapon.BaseStaminaCost;
+                if (isHeavyAttack) staminaDrain = Mathf.CeilToInt(staminaDrain * UnarmedWeapon.HeavyAttackStaminaMultiplier);
+            }
+            else
+            {
+                staminaDrain = LeftHand.BaseStaminaCost;
+                if (isHeavyAttack) staminaDrain = Mathf.CeilToInt(staminaDrain * LeftHand.HeavyAttackStaminaMultiplier);
+            }
+
+            return staminaDrain;
+        }
+
         private void InputHandler_CycleLeftHand()
         {
             CycleWeaponInHand(Hand.Left);

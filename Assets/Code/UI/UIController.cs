@@ -9,7 +9,8 @@ namespace DarkSouls.UI
     /// </summary>
     public class UIController : MonoBehaviour
     {
-        private Healthbar _healthBar;
+        private StatusBar _healthBar;
+        private StatusBar _staminaBar;
         private QuickSlots _quickSlots;
         private CharacterAttributes _characterAttributes;
         private WeaponSocketController _weaponSocketController;
@@ -21,19 +22,42 @@ namespace DarkSouls.UI
 
         private void Start()
         {
-            // health bar will reside on a canvas object outside of the player hierarchy.
-            _healthBar = FindObjectOfType<Healthbar>(); //very inefficient method but there should only be one of these on the ui canvas
+            var statusBars = FindObjectsOfType<StatusBar>();
+
+            // status bars will reside on a canvas object outside of the player hierarchy.
+            // there should only be one of each type in a scene
+            foreach (var statusBar in statusBars)
+            {
+                if (statusBar.StatusBarType == StatusBarTypes.HealthBar)
+                {
+                    _healthBar = statusBar;
+                    continue;
+                }
+
+                if (statusBar.StatusBarType == StatusBarTypes.StaminaBar)
+                {
+                    _staminaBar = statusBar;
+                    continue;
+                }
+
+                Debug.LogWarning($"UIController receives a status bar of type {statusBar.StatusBarType} that has no known UI Element associated with it.");
+            }
+
             _quickSlots = FindObjectOfType<QuickSlots>(); //same comment for healthbar.
 
             _characterAttributes.OnCharacterHealthChanged += OnCharacterHealthChanged;
+            _characterAttributes.OnCharacterStaminaChanged += OnCharacterStaminaChanged;
             SetHealthBarMaximum(_characterAttributes.MaximumHealth);
             SetHealthBarValue(_characterAttributes.CurrentHealth);
+            SetStaminaBarMaximum(_characterAttributes.MaximumStamina);
+            SetStaminaBarValue(_characterAttributes.CurrentStamina);
 
             _weaponSocketController = GetComponent<WeaponSocketController>();
             _weaponSocketController.OnRightHandWeaponChanged += WeaponSocketController_OnRightHandWeaponChanged;
             _weaponSocketController.OnLeftHandWeaponChanged += WeaponSocketController_OnLeftHandWeaponChanged;
         }
 
+        #region Health
         /// <summary>
         /// Will set the health bar maximum.  Will adjust health the current health if it is higher than the max.
         /// </summary>
@@ -63,7 +87,30 @@ namespace DarkSouls.UI
         {
             SetHealthBarValue(currentHealth);
         }
+        #endregion
 
+        #region Stamina
+
+        private void SetStaminaBarMaximum(int value)
+        {
+            _staminaBar.Max = value;
+            if (_staminaBar.Current > _staminaBar.Max) _staminaBar.Current = _staminaBar.Max;
+        }
+
+        private void SetStaminaBarValue(int value)
+        {
+            if (value < 0) value = 0;
+            if (value > _staminaBar.Max) value = _staminaBar.Max;
+            _staminaBar.Current = value;
+        }
+
+        private void OnCharacterStaminaChanged(int currentStamina)
+        {
+            SetStaminaBarValue(currentStamina);
+        }
+        #endregion
+
+        #region Weapon Sockets
         private void WeaponSocketController_OnRightHandWeaponChanged(Weapon weapon)
         {
             _quickSlots.UpdateRightHandSlotIcon(weapon);
@@ -73,5 +120,6 @@ namespace DarkSouls.UI
         {
             _quickSlots.UpdateLeftHandSlotIcon(weapon);
         }
+        #endregion
     }
 }

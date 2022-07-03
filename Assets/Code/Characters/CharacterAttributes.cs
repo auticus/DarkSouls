@@ -8,8 +8,8 @@ namespace DarkSouls.Characters
     /// </summary>
     public class CharacterAttributes : MonoBehaviour
     {
-        private const int DEFAULT_ATTRIBUTE_VALUE = 10;
-        private const int HEALTH_PIP_VALUE = 5;
+        private const int DEFAULT_ATTRIBUTE_VALUE = 8;
+        private const int PIP_VALUE = 5;
 
         /// <summary>
         /// Event that fires whenever the health of the player changed and sends the current health value.
@@ -17,10 +17,21 @@ namespace DarkSouls.Characters
         public event Action<int> OnCharacterHealthChanged;
 
         /// <summary>
+        /// Event that fires whenever the stamina of the player changed and sends the current stamina value.
+        /// </summary>
+        public event Action<int> OnCharacterStaminaChanged;
+
+        /// <summary>
         /// Gets or sets a value that is how healthy the character is.
         /// </summary>
         [field: SerializeField]
         public int Constitution { get; set; } = DEFAULT_ATTRIBUTE_VALUE;
+
+        /// <summary>
+        /// Gets or sets a value that determines how much stamina a character has before becoming exhausted.
+        /// </summary>
+        [field: SerializeField]
+        public int Endurance { get; set; } = DEFAULT_ATTRIBUTE_VALUE;
 
         /// <summary>
         /// Gets a value indicating how many hit points the character can have.
@@ -35,11 +46,24 @@ namespace DarkSouls.Characters
         /// will not let you serialize the field so it will not show up in the designer.
         [field: SerializeField]
         [Tooltip("The current hit points the character has")]
-        public int CurrentHealth { get; set; } 
+        public int CurrentHealth { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating how many points can exist in the player stamina pool.
+        /// </summary>
+        [field: SerializeField]
+        public int MaximumStamina { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating what the current stamina of the character is.
+        /// </summary>
+        [field: SerializeField]
+        public int CurrentStamina { get; set; }
 
         private void Awake()
         {
             InitializeHitPoints();
+            InitializeStaminaPool();
         }
 
         /// <summary>
@@ -55,10 +79,27 @@ namespace DarkSouls.Characters
             OnCharacterHealthChanged?.Invoke(CurrentHealth);
         }
 
+        public void DrainStamina(int staminaDrain)
+        {
+            if (CurrentStamina == 0) return; //already exhausted
+
+            CurrentStamina -= staminaDrain;
+            if (CurrentStamina < 0) CurrentStamina = 0;
+            OnCharacterStaminaChanged?.Invoke(CurrentStamina);
+
+            // todo: invoke an on exhausted event to trigger an exhausted state
+        }
+
         private void InitializeHitPoints()
         {
-            MaximumHealth = Constitution * HEALTH_PIP_VALUE;
+            MaximumHealth = Constitution * PIP_VALUE;
             CurrentHealth = MaximumHealth;
+        }
+
+        private void InitializeStaminaPool()
+        {
+            MaximumStamina = Endurance * PIP_VALUE;
+            CurrentStamina = MaximumStamina;
         }
     }
 }

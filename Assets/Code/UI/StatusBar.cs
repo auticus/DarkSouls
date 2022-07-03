@@ -3,11 +3,17 @@ using UnityEngine.UI;
 
 namespace DarkSouls.UI
 {
-    public class Healthbar : MonoBehaviour
+    public class StatusBar : MonoBehaviour
     {
         private Slider _slider;
         private int _max;
         private int _current;
+
+        /// <summary>
+        /// Gets or sets the type of status bar this is.
+        /// </summary>
+        [field: SerializeField]
+        public StatusBarTypes StatusBarType { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum value of the Health Bar.

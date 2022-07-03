@@ -20,5 +20,7 @@ MonoBehaviour:
   BaseDamage: 1
   LightAttackAnimations: []
   HeavyAttackAnimations: []
-  <RightHandIdle>k__BackingField: Right_Arm_Idle_01
-  <LeftHandIdle>k__BackingField: Left_Arm_Idle_01
+  RightHandIdle: Right_Arm_Idle_01
+  LeftHandIdle: Left_Arm_Idle_01
+  BaseStaminaCost: 5
+  HeavyAttackStaminaMultiplier: 2

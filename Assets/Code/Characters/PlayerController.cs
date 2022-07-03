@@ -93,6 +93,19 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
+    /// Called by the animator control to trigger a stamina drain.
+    /// </summary>
+    public void DrainCharacterStamina()
+    {
+        var attackingHand = GetActiveAttackingHand(out bool isHeavyAttack);
+        var staminaDrain = attackingHand == Hand.Right 
+                ? _characterInventory.GetRightHandStaminaDrain(isHeavyAttack)
+                : _characterInventory.GetLeftHandStaminaDrain(isHeavyAttack);
+        
+        _characterAttributes.DrainStamina(staminaDrain);
+    }
+
+    /// <summary>
     /// Called by animator control to enable the weapon collider.
     /// </summary>
     public void EnableAttackingWeaponCollider()
@@ -164,6 +177,13 @@ public class PlayerController : MonoBehaviour
 
     private Hand GetActiveAttackingHand()
     {
+        return GetActiveAttackingHand(out var isHeavyAttack);
+    }
+
+    private Hand GetActiveAttackingHand(out bool isHeavyAttack)
+    {
+        isHeavyAttack = State.IsHeavyAttacking;
+
         //currently we only have right handed weapon, shield attacks etc have not yet been implemented
         if (State.IsAttacking || State.IsHeavyAttacking) return Hand.Right;
         return Hand.None;
