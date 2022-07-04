@@ -1,11 +1,12 @@
-﻿using DarkSouls.Characters;
+﻿using System.Collections.Generic;
+using DarkSouls.Characters;
 using DarkSouls.Input;
 using UnityEngine;
 
 namespace DarkSouls.Inventory
 {
     /// <summary>
-    /// Inventory class used to hold information pertaining to all of the equipment that a character holds.
+    /// Inventory class that goes on a player character used to hold information pertaining to all of the equipment that a character holds.
     /// </summary>
     public class CharacterInventory : MonoBehaviour
     {
@@ -40,6 +41,14 @@ namespace DarkSouls.Inventory
         /// The unarmed weapon that will be used if a hand does not contain a weapon.
         /// </summary>
         public Weapon UnarmedWeapon;
+
+        #region Inventory Sub-Categories
+        /// <summary>
+        /// A list of all weapons currently in the player's inventory.
+        /// </summary>
+        [Header("Sub Inventory Lists")]
+        public List<Weapon> Weapons = new List<Weapon>();
+        #endregion
 
         private void Awake()
         {

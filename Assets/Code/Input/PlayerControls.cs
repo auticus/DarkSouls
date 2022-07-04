@@ -187,6 +187,15 @@ namespace DarkSouls.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""17c00b44-1f78-482b-8259-2f0566abc420"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -299,6 +308,28 @@ namespace DarkSouls.Input
                     ""action"": ""Cycle Left Hand"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c970fcd7-0862-4943-98fb-be63dc5035b3"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse & Keyboard"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""de4b9b09-ee58-4a6a-b2dc-bb33daf25b83"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -344,6 +375,7 @@ namespace DarkSouls.Input
             m_PlayerActions_HeavyAttack = m_PlayerActions.FindAction("Heavy Attack", throwIfNotFound: true);
             m_PlayerActions_CycleRightHand = m_PlayerActions.FindAction("Cycle Right Hand", throwIfNotFound: true);
             m_PlayerActions_CycleLeftHand = m_PlayerActions.FindAction("Cycle Left Hand", throwIfNotFound: true);
+            m_PlayerActions_Interact = m_PlayerActions.FindAction("Interact", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -449,6 +481,7 @@ namespace DarkSouls.Input
         private readonly InputAction m_PlayerActions_HeavyAttack;
         private readonly InputAction m_PlayerActions_CycleRightHand;
         private readonly InputAction m_PlayerActions_CycleLeftHand;
+        private readonly InputAction m_PlayerActions_Interact;
         public struct PlayerActionsActions
         {
             private @PlayerControls m_Wrapper;
@@ -458,6 +491,7 @@ namespace DarkSouls.Input
             public InputAction @HeavyAttack => m_Wrapper.m_PlayerActions_HeavyAttack;
             public InputAction @CycleRightHand => m_Wrapper.m_PlayerActions_CycleRightHand;
             public InputAction @CycleLeftHand => m_Wrapper.m_PlayerActions_CycleLeftHand;
+            public InputAction @Interact => m_Wrapper.m_PlayerActions_Interact;
             public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -482,6 +516,9 @@ namespace DarkSouls.Input
                     @CycleLeftHand.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnCycleLeftHand;
                     @CycleLeftHand.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnCycleLeftHand;
                     @CycleLeftHand.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnCycleLeftHand;
+                    @Interact.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnInteract;
+                    @Interact.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnInteract;
+                    @Interact.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnInteract;
                 }
                 m_Wrapper.m_PlayerActionsActionsCallbackInterface = instance;
                 if (instance != null)
@@ -501,6 +538,9 @@ namespace DarkSouls.Input
                     @CycleLeftHand.started += instance.OnCycleLeftHand;
                     @CycleLeftHand.performed += instance.OnCycleLeftHand;
                     @CycleLeftHand.canceled += instance.OnCycleLeftHand;
+                    @Interact.started += instance.OnInteract;
+                    @Interact.performed += instance.OnInteract;
+                    @Interact.canceled += instance.OnInteract;
                 }
             }
         }
@@ -535,6 +575,7 @@ namespace DarkSouls.Input
             void OnHeavyAttack(InputAction.CallbackContext context);
             void OnCycleRightHand(InputAction.CallbackContext context);
             void OnCycleLeftHand(InputAction.CallbackContext context);
+            void OnInteract(InputAction.CallbackContext context);
         }
     }
 }

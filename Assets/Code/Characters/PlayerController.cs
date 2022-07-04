@@ -2,6 +2,7 @@ using System;
 using DarkSouls.Animation;
 using DarkSouls.Characters;
 using DarkSouls.Combat;
+using DarkSouls.Input;
 using DarkSouls.Inventory;
 using UnityEngine;
 
@@ -15,10 +16,25 @@ public class PlayerController : MonoBehaviour
     private CharacterAttributes _characterAttributes;
     private CharacterInventory _characterInventory;
     private WeaponSocketController _weaponSocketController;
+    private InputHandler _inputHandler; //optional - only players will have this
 
+    private Interactable _interactableInRange;
+
+    /// <summary>
+    /// Gets the Character's Eyes which let the character know what it sees.
+    /// </summary>
+    [field: SerializeField]
+    public Eyes CharacterEyes { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating that the controller belongs to a player.
+    /// </summary>
+    public bool IsPlayerCharacter { get; private set; }
+    
     /// <summary>
     /// The character state data.
     /// </summary>
+    [field: SerializeField]
     public CharacterState State { get; private set; }
 
     public Action OnInteractingAnimationCompleteDoThis { get; set; }
@@ -32,6 +48,10 @@ public class PlayerController : MonoBehaviour
         _characterAttributes = GetComponent<CharacterAttributes>();
         _characterInventory = GetComponent<CharacterInventory>();
         _weaponSocketController = GetComponent<WeaponSocketController>();
+        _inputHandler = GetComponent<InputHandler>();
+        if (_inputHandler != null) _inputHandler.OnInputInteraction += InputHandler_InteractionButtonInvoked;
+
+        CharacterEyes = new Eyes(this);
     }
 
     // Start is called before the first frame update WHEN A SCRIPT IS ENABLED
@@ -44,6 +64,12 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         State.IsInteracting = _animator.GetBool(State.IsInteractingHash);
+
+        if (IsPlayerCharacter)
+        {
+            _interactableInRange = CharacterEyes.ScanAreaInFrontOfMeForInteractable();
+            if (_interactableInRange != null) Debug.Log("I see you!");
+        }
     }
 
     void LateUpdate()
@@ -57,6 +83,17 @@ public class PlayerController : MonoBehaviour
             //deviation: he has in air timer on the PlayerLocomotion component but I moved it here because locomotion doesn't care how long its in the air
             State.AerialTimer += Time.deltaTime;
         }
+    }
+
+    private void InitializePlayer()
+    {
+        _weaponSocketController.LoadRightHandSocketWithWeapon(_characterInventory.RightHand);
+        _weaponSocketController.LoadLeftHandSocketWithWeapon(_characterInventory.LeftHand);
+
+        _weaponSocketController.OnRightHandHit += RightHandHit;
+        _weaponSocketController.OnLeftHandHit += LeftHandHit;
+
+        IsPlayerCharacter = gameObject.CompareTag("Player");
     }
 
     /// <summary>
@@ -137,15 +174,6 @@ public class PlayerController : MonoBehaviour
         State.IsAbleToCombo = false;
     }
 
-    private void InitializePlayer()
-    {
-        _weaponSocketController.LoadRightHandSocketWithWeapon(_characterInventory.RightHand);
-        _weaponSocketController.LoadLeftHandSocketWithWeapon(_characterInventory.LeftHand);
-
-        _weaponSocketController.OnRightHandHit += RightHandHit;
-        _weaponSocketController.OnLeftHandHit += LeftHandHit;
-    }
-
     private void RespondToImpactHit()
     {
         //todo this will always impact from the front, will need to figure out what weapons used, and direction of attack
@@ -187,5 +215,16 @@ public class PlayerController : MonoBehaviour
         //currently we only have right handed weapon, shield attacks etc have not yet been implemented
         if (State.IsAttacking || State.IsHeavyAttacking) return Hand.Right;
         return Hand.None;
+    }
+
+    private void InputHandler_InteractionButtonInvoked()
+    {
+        if (_interactableInRange == Eyes.NO_INTERACTABLE_FOUND)
+        {
+            Debug.Log("Interacting but nothing is visible");
+            return;
+        }
+        _interactableInRange.Interact(this);
+        _interactableInRange = Eyes.NO_INTERACTABLE_FOUND;
     }
 }

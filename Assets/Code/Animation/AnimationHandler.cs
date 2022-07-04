@@ -1,5 +1,4 @@
-﻿using DarkSouls.Characters;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DarkSouls.Animation
 {
@@ -14,6 +13,7 @@ namespace DarkSouls.Animation
         public const string ONE_HANDED_DEATH_01 = "oh_death_01";
         public const string RIGHT_ARM_IDLE_EMPTY = "Right Arm Empty";
         public const string LEFT_ARM_IDLE_EMPTY = "Left Arm Empty";
+        public const string PICKUP_ITEM = "Pick up Item";
         
         private readonly int _verticalHash = Animator.StringToHash("Vertical");
         private readonly int _horizontalHash = Animator.StringToHash("Horizontal");

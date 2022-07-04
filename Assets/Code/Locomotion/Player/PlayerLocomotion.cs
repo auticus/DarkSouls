@@ -80,6 +80,14 @@ namespace DarkSouls.Locomotion.Player
                 _playerController);
         }
 
+        /// <summary>
+        /// Stops the movement of the character.
+        /// </summary>
+        public void StopCharacterMovement()
+        {
+            _rigidBody.velocity = Vector3.zero;
+        }
+
         private void HandleRollingAndSprinting(float deltaTime)
         {
             DecideToRollOrSprint(deltaTime);

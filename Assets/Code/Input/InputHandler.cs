@@ -1,8 +1,6 @@
 using System;
-using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Debug = UnityEngine.Debug;
 
 namespace DarkSouls.Input
 {
@@ -13,6 +11,7 @@ namespace DarkSouls.Input
         /// </summary>
         public Vector2 MovementInput { get; private set; }
         public bool RollButtonPressed { get; private set; }
+        public bool InteractButtonPressed { get; private set; }
         public bool AttackButtonPressed { get; private set; }
         public bool HeavyAttackButtonPressed { get; private set; }
         public bool RightHandCyclePressed { get; private set; }
@@ -22,6 +21,11 @@ namespace DarkSouls.Input
         /// Fires when the Roll button is invoked.
         /// </summary>
         public event Action OnInputRoll;
+
+        /// <summary>
+        /// Fires when the Interaction button is invoked.
+        /// </summary>
+        public event Action OnInputInteraction;
 
         /// <summary>
         /// Fires when the Attack button is pressed.
@@ -86,6 +90,9 @@ namespace DarkSouls.Input
 
         public void OnCycleLeftHand(InputAction.CallbackContext context)
             => ProcessInputEvent(context, value => LeftHandCyclePressed = value, ref OnInputCycleLeftHand);
+
+        public void OnInteract(InputAction.CallbackContext context)
+            => ProcessInputEvent(context, value => InteractButtonPressed = value, ref OnInputInteraction);
 
         private void ProcessInputEvent(InputAction.CallbackContext context, Action<bool> boolFlagProccessingDirective, ref Action eventAction)
         {
