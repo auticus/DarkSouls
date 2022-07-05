@@ -4,7 +4,9 @@ using DarkSouls.Characters;
 using DarkSouls.Combat;
 using DarkSouls.Input;
 using DarkSouls.Inventory;
+using DarkSouls.UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Centralized class that is responsible for bridging the gap between game components and the character.
@@ -15,9 +17,10 @@ public class PlayerController : MonoBehaviour
     private AnimationHandler _animationHandler;
     private CharacterAttributes _characterAttributes;
     private CharacterInventory _characterInventory;
-    private WeaponSocketController _weaponSocketController;
     private InputHandler _inputHandler; //optional - only players will have this
-
+    private PopUpUI _popupUI; //optional - only players should have this so do not let NPC controllers snag a reference.
+    private WeaponSocketController _weaponSocketController;
+    
     private Interactable _interactableInRange;
 
     /// <summary>
@@ -48,16 +51,17 @@ public class PlayerController : MonoBehaviour
         _characterAttributes = GetComponent<CharacterAttributes>();
         _characterInventory = GetComponent<CharacterInventory>();
         _weaponSocketController = GetComponent<WeaponSocketController>();
-        _inputHandler = GetComponent<InputHandler>();
-        if (_inputHandler != null) _inputHandler.OnInputInteraction += InputHandler_InteractionButtonInvoked;
-
+        
         CharacterEyes = new Eyes(this);
+
+        IsPlayerCharacter = gameObject.CompareTag("Player");
     }
 
     // Start is called before the first frame update WHEN A SCRIPT IS ENABLED
     void Start()
     {
-        InitializePlayer();
+        InitializeCharacter();
+        if (IsPlayerCharacter) InitializePlayerOnlyComponents();
     }
 
     // Update is called once per frame
@@ -65,11 +69,7 @@ public class PlayerController : MonoBehaviour
     {
         State.IsInteracting = _animator.GetBool(State.IsInteractingHash);
 
-        if (IsPlayerCharacter)
-        {
-            _interactableInRange = CharacterEyes.ScanAreaInFrontOfMeForInteractable();
-            if (_interactableInRange != null) Debug.Log("I see you!");
-        }
+        if (IsPlayerCharacter) PlayerOnlyUpdate();
     }
 
     void LateUpdate()
@@ -85,15 +85,40 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void InitializePlayer()
+    private void InitializeCharacter()
     {
         _weaponSocketController.LoadRightHandSocketWithWeapon(_characterInventory.RightHand);
         _weaponSocketController.LoadLeftHandSocketWithWeapon(_characterInventory.LeftHand);
 
         _weaponSocketController.OnRightHandHit += RightHandHit;
         _weaponSocketController.OnLeftHandHit += LeftHandHit;
+    }
 
-        IsPlayerCharacter = gameObject.CompareTag("Player");
+    private void InitializePlayerOnlyComponents()
+    {
+        if (!TryGetComponent<InputHandler>(out _inputHandler))
+        {
+            Debug.LogError("Playable character does not have an input controller available");
+        }
+        else
+        {
+            _inputHandler.OnInputInteraction += InputHandler_InteractionButtonInvoked;
+        }
+        
+        _popupUI = FindObjectOfType<PopUpUI>(); //only should be one of these in the scene and only a player should care about it
+    }
+
+    private void PlayerOnlyUpdate()
+    {
+        _interactableInRange = CharacterEyes.ScanAreaInFrontOfMeForInteractable();
+        if (_interactableInRange != null)
+        {
+            _popupUI.ShowPopUpText(string.IsNullOrEmpty(_interactableInRange.InteractionText) ? "## UNDEFINED ##" : _interactableInRange.InteractionText);
+        }
+        else //make sure popup is not active
+        {
+            _popupUI.HidePopUpText();
+        }
     }
 
     /// <summary>
@@ -174,6 +199,16 @@ public class PlayerController : MonoBehaviour
         State.IsAbleToCombo = false;
     }
 
+    /// <summary>
+    /// Pops up an image to the player with a text caption.
+    /// </summary>
+    /// <param name="image">The image to display.</param>
+    /// <param name="text">The text caption to display with the image.</param>
+    public void PopupImageToPlayer(Sprite image, string text)
+    {
+        _popupUI.ShowImagePopUp(image, text);
+    }
+
     private void RespondToImpactHit()
     {
         //todo this will always impact from the front, will need to figure out what weapons used, and direction of attack
@@ -205,6 +240,7 @@ public class PlayerController : MonoBehaviour
 
     private Hand GetActiveAttackingHand()
     {
+        // todo: currently listed as unneccessary assignment - when heavy attacks are used here make sure this warning goes away
         return GetActiveAttackingHand(out var isHeavyAttack);
     }
 
@@ -219,11 +255,14 @@ public class PlayerController : MonoBehaviour
 
     private void InputHandler_InteractionButtonInvoked()
     {
-        if (_interactableInRange == Eyes.NO_INTERACTABLE_FOUND)
+        // clear icon pop up if its displayed
+        if (_popupUI.IsImagePopUpDisplayed)
         {
-            Debug.Log("Interacting but nothing is visible");
-            return;
+            _popupUI.HideImagePopUp();
         }
+
+        // if an interactable is in range, interact with it
+        if (_interactableInRange == Eyes.NO_INTERACTABLE_FOUND) return;
         _interactableInRange.Interact(this);
         _interactableInRange = Eyes.NO_INTERACTABLE_FOUND;
     }

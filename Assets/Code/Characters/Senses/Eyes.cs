@@ -17,7 +17,7 @@ namespace DarkSouls.Characters
         /// </summary>
         [field: SerializeField]
         [Tooltip("The radius that the character can scan for interactables in front of them")]
-        public float InteractableScanRadius { get; set; } = 0.3f;
+        public float InteractableScanRadius { get; set; } = 0.4f;
 
         /// <summary>
         /// Gets or sets the distance that the character can scan for interactables in front of them.

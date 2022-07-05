@@ -10,6 +10,10 @@ namespace DarkSouls.Inventory
         public const string INTERACTIVE_TAG = "Interactable";
 
         public float DebugGizmoRadius = 0.5f;
+
+        /// <summary>
+        /// The text that should be displayed when interacting with the item.
+        /// </summary>
         public string InteractionText;
 
         private void OnDrawGizmosSelected()

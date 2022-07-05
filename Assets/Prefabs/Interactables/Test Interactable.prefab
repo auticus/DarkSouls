@@ -4825,7 +4825,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DebugGizmoRadius: 0.5
-  InteractionText: Sword Pickup
+  InteractionText: Pickup Item
   <PickupWeapon>k__BackingField: {fileID: 11400000, guid: 30738f2f36d66bc42bbe3ce6cee94217,
     type: 2}
 --- !u!135 &4729596930465916250

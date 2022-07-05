@@ -29,7 +29,7 @@ namespace DarkSouls.Inventory
             animationHandler.PlayTargetAnimation(AnimationHandler.PICKUP_ITEM, isInteractingAnimation: true);
             inventory.Weapons.Add(PickupWeapon);
 
-            Debug.Log($"Character picked up {PickupWeapon.Name}");
+            controller.PopupImageToPlayer(PickupWeapon.Icon, $"Picked up {PickupWeapon.Name}");
             Destroy(gameObject);
         }
     }
