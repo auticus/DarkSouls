@@ -1,7 +1,9 @@
 using System;
 using DarkSouls.Animation;
+using DarkSouls.Characters;
 using DarkSouls.Input;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace DarkSouls.Locomotion.Player
 {
@@ -12,12 +14,13 @@ namespace DarkSouls.Locomotion.Player
         private readonly float _rollButtonPressBeforeSprintInvoked = 0.5f;
         
         private PlayerController _playerController;
+        private CharacterAttributes _playerAttributes; 
         private AnimationHandler _animationHandler;
         private Transform _playerTransform;
         private Rigidbody _rigidBody;
 
         private float _rollButtonPressedTime;
-        private Vector3 _rollDirection;
+        private Vector3 _interactionDirection;
         private Vector3 _moveDirection;
 
         private Gravity _gravityLocomotion;
@@ -33,17 +36,21 @@ namespace DarkSouls.Locomotion.Player
         [SerializeField][Tooltip("Offset point front of player/back of player from where the raycast should begin")] private float groundDetectionRayOffset = 0f;
         [SerializeField][Tooltip("What the distance is before the falling animation should play")] private float minDistanceNeededToBeginFallAnimation = 1f;
 
-
-        void Start()
+        void Awake()
         {
             _playerController = GetComponent<PlayerController>();
             _rigidBody = GetComponent<Rigidbody>();
             _animationHandler = GetComponent<AnimationHandler>();
+            _playerAttributes = GetComponent<CharacterAttributes>();
+            _inputHandler = GetComponent<InputHandler>(); // not optional - this is a player's locomotion
+        }
+
+        void Start()
+        {
             _mainCamera = Camera.main.transform;
             _playerTransform = transform;
-            _inputHandler = GetComponent<InputHandler>();
-
-            _inputHandler.OnInputRoll += InputHandlerOnInputRoll;
+            _inputHandler.OnInputRoll += InputHandler_Roll;
+            _inputHandler.OnInputJump += InputHandler_Jump;
 
             _gravityLocomotion = new Gravity(
                 _animationHandler,
@@ -96,7 +103,7 @@ namespace DarkSouls.Locomotion.Player
 
         private void HandleMovement()
         {
-            if (_playerController.State.IsInteracting || _playerController.State.IsRolling) return;
+            if (_playerController.State.IsInteracting || _playerController.State.IsRolling || _playerController.State.IsJumping) return;
 
             var velocity = _moveDirection * (_playerController.State.IsSprinting ? sprintSpeed : movementSpeed);
             _rigidBody.velocity = Vector3.ProjectOnPlane(velocity, Vector3.zero);
@@ -138,7 +145,7 @@ namespace DarkSouls.Locomotion.Player
             return moveDirection;
         }
 
-        private void InputHandlerOnInputRoll()
+        private void InputHandler_Roll()
         {
             //When the Roll button is pressed it will either Roll or if no direction was given it will back step the player
             if (_playerController.State.IsInteracting) return;
@@ -151,10 +158,37 @@ namespace DarkSouls.Locomotion.Player
             }
             else
             {
-                _rollDirection = GetXZMoveDirectionFromInput();
+                _interactionDirection = GetXZMoveDirectionFromInput();
                 _rollButtonPressedTime = 0;
                 _playerController.State.RollButtonInvoked = true;
             }
+        }
+
+        private void InputHandler_Jump()
+        {
+            if (_playerController.State.IsInteracting) return;
+            var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
+            var jumpDirection = GetXZMoveDirectionFromInput();
+
+            // rotate to face the direction you are moving, otherwise if not moving just jump up in place.
+            if (totalMovement > 0)
+            {
+                _animationHandler.PlayTargetAnimation(AnimationHandler.ONE_HANDED_RUN_JUMP, isInteractingAnimation: true);
+                var jumpRotation = Quaternion.LookRotation(jumpDirection);
+                _playerTransform.rotation = jumpRotation;
+            }
+            else
+            {
+                _animationHandler.PlayTargetAnimation(AnimationHandler.ONE_HANDED_JUMP_IN_PLACE, isInteractingAnimation: true);
+            }
+
+            // set state and clean up
+            _playerController.State.IsJumping = true;
+            _playerController.OnInteractingAnimationCompleteDoThis = () =>
+            {
+                _playerController.State.IsJumping = false;
+                _animationHandler.FinishInteractionAnimation();
+            };
         }
 
         private void HandleBackstep()
@@ -185,8 +219,9 @@ namespace DarkSouls.Locomotion.Player
                 return;
             }
 
-            //no longer pressed, but we didn't trigger a sprint - so roll
-            HandleRoll(_rollDirection);
+            // no longer pressed, but we didn't trigger a sprint - so roll
+            // the interaction direction will have been set when the button was initially pressed
+            HandleRoll(_interactionDirection);
         }
 
         private void HandleRoll(Vector3 moveDirection)

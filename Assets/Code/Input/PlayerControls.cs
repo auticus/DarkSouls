@@ -144,6 +144,15 @@ namespace DarkSouls.Input
             ""id"": ""52915e12-737a-4bb5-99f1-143503328752"",
             ""actions"": [
                 {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""17633b02-70ea-4f89-b6b3-f132529cf619"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Roll"",
                     ""type"": ""Button"",
                     ""id"": ""e7dedbbd-1077-49d7-a42c-850e713ca14c"",
@@ -330,6 +339,28 @@ namespace DarkSouls.Input
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e8259194-f0c8-4c2e-ba33-cf9b5b9241e9"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse & Keyboard"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""786af3d6-cd52-4e83-9352-fec67971fb4f"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -370,6 +401,7 @@ namespace DarkSouls.Input
             m_PlayerMovement_Camera = m_PlayerMovement.FindAction("Camera", throwIfNotFound: true);
             // Player Actions
             m_PlayerActions = asset.FindActionMap("Player Actions", throwIfNotFound: true);
+            m_PlayerActions_Jump = m_PlayerActions.FindAction("Jump", throwIfNotFound: true);
             m_PlayerActions_Roll = m_PlayerActions.FindAction("Roll", throwIfNotFound: true);
             m_PlayerActions_Attack = m_PlayerActions.FindAction("Attack", throwIfNotFound: true);
             m_PlayerActions_HeavyAttack = m_PlayerActions.FindAction("Heavy Attack", throwIfNotFound: true);
@@ -476,6 +508,7 @@ namespace DarkSouls.Input
         // Player Actions
         private readonly InputActionMap m_PlayerActions;
         private IPlayerActionsActions m_PlayerActionsActionsCallbackInterface;
+        private readonly InputAction m_PlayerActions_Jump;
         private readonly InputAction m_PlayerActions_Roll;
         private readonly InputAction m_PlayerActions_Attack;
         private readonly InputAction m_PlayerActions_HeavyAttack;
@@ -486,6 +519,7 @@ namespace DarkSouls.Input
         {
             private @PlayerControls m_Wrapper;
             public PlayerActionsActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Jump => m_Wrapper.m_PlayerActions_Jump;
             public InputAction @Roll => m_Wrapper.m_PlayerActions_Roll;
             public InputAction @Attack => m_Wrapper.m_PlayerActions_Attack;
             public InputAction @HeavyAttack => m_Wrapper.m_PlayerActions_HeavyAttack;
@@ -501,6 +535,9 @@ namespace DarkSouls.Input
             {
                 if (m_Wrapper.m_PlayerActionsActionsCallbackInterface != null)
                 {
+                    @Jump.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnJump;
+                    @Jump.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnJump;
+                    @Jump.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnJump;
                     @Roll.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnRoll;
                     @Roll.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnRoll;
                     @Roll.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnRoll;
@@ -523,6 +560,9 @@ namespace DarkSouls.Input
                 m_Wrapper.m_PlayerActionsActionsCallbackInterface = instance;
                 if (instance != null)
                 {
+                    @Jump.started += instance.OnJump;
+                    @Jump.performed += instance.OnJump;
+                    @Jump.canceled += instance.OnJump;
                     @Roll.started += instance.OnRoll;
                     @Roll.performed += instance.OnRoll;
                     @Roll.canceled += instance.OnRoll;
@@ -570,6 +610,7 @@ namespace DarkSouls.Input
         }
         public interface IPlayerActionsActions
         {
+            void OnJump(InputAction.CallbackContext context);
             void OnRoll(InputAction.CallbackContext context);
             void OnAttack(InputAction.CallbackContext context);
             void OnHeavyAttack(InputAction.CallbackContext context);

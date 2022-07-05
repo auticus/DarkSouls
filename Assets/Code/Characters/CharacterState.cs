@@ -72,6 +72,11 @@ namespace DarkSouls.Characters
         public bool IsImpacted { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating that the player is jumping (defined as moving in an upward trajectory from a jumping position).
+        /// </summary>
+        public bool IsJumping { get; set; }
+
+        /// <summary>
         /// Gets or set a value indicating that the player is rolling.
         /// </summary>
         public bool IsRolling { get; set; }

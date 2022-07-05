@@ -22,6 +22,12 @@ namespace DarkSouls.Characters
         public event Action<int> OnCharacterStaminaChanged;
 
         /// <summary>
+        /// Gets or sets a value that determines how agile a character is, which determines their speed and ranged attacks.
+        /// </summary>
+        [field: SerializeField]
+        public int Agility { get; set; } = DEFAULT_ATTRIBUTE_VALUE;
+
+        /// <summary>
         /// Gets or sets a value that is how healthy the character is.
         /// </summary>
         [field: SerializeField]
@@ -32,6 +38,12 @@ namespace DarkSouls.Characters
         /// </summary>
         [field: SerializeField]
         public int Endurance { get; set; } = DEFAULT_ATTRIBUTE_VALUE;
+
+        /// <summary>
+        /// Gets or sets a value that determines how strong a character is, which determines their force, carry capacity, jumping etc.
+        /// </summary>
+        [field: SerializeField]
+        public int Strength { get; set; } = DEFAULT_ATTRIBUTE_VALUE;
 
         /// <summary>
         /// Gets a value indicating how many hit points the character can have.

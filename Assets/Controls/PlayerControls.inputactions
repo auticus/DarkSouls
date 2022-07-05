@@ -120,6 +120,15 @@
             "id": "52915e12-737a-4bb5-99f1-143503328752",
             "actions": [
                 {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "17633b02-70ea-4f89-b6b3-f132529cf619",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Roll",
                     "type": "Button",
                     "id": "e7dedbbd-1077-49d7-a42c-850e713ca14c",
@@ -304,6 +313,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e8259194-f0c8-4c2e-ba33-cf9b5b9241e9",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse & Keyboard",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "786af3d6-cd52-4e83-9352-fec67971fb4f",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

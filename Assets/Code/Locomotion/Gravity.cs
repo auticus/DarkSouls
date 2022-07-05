@@ -41,6 +41,10 @@ namespace DarkSouls.Locomotion
              * Something about this method is also responsible for keeping the character above the ground as the collider is currently above its knees
              */
             //Initialization and prep the origin of the ray
+
+            // if the player is in the middle of a jump (exerting upward force) do not apply gravity until that is finished.
+            if (playerController.State.IsJumping) return;
+
             var origin = _characterTransform.position;
             origin.y += groundDetectionRayStartPoint;
 
@@ -95,13 +99,14 @@ namespace DarkSouls.Locomotion
         /// <param name="fallingSpeed"></param>
         private void ApplyGravityForceToAerialCharacter(Vector3 moveDirection, float fallingSpeed)
         {
-            const float ledgeBoostMultipler = 2.0f;
+            const float ledgeBoostMultiplier = 1.0f;
             if (_characterController.State.IsAerial)
             {
                 _rigidBody.AddForce(-Vector3.up * fallingSpeed); //apply the falling speed down (again not realistic should be falling 9.8 m/s extra per turn until terminal velocity)
 
                 //this is supposed to help boost them off ledges and move them forward.  I'm not convinced this is needed
-                var movementVelocity = moveDirection * fallingSpeed * ledgeBoostMultipler;
+                //originally multiplier was 2.0 but that was batman ridiculous so cranked it to 1.  May not be needed but can tweak.
+                var movementVelocity = moveDirection * fallingSpeed * ledgeBoostMultiplier;
 
                 if (movementVelocity != Vector3.zero)
                 {

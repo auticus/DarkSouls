@@ -14,6 +14,8 @@ namespace DarkSouls.Animation
         public const string RIGHT_ARM_IDLE_EMPTY = "Right Arm Empty";
         public const string LEFT_ARM_IDLE_EMPTY = "Left Arm Empty";
         public const string PICKUP_ITEM = "Pick up Item";
+        public const string ONE_HANDED_JUMP_IN_PLACE = "oh_Jump";
+        public const string ONE_HANDED_RUN_JUMP = "oh_Run_Jump";
         
         private readonly int _verticalHash = Animator.StringToHash("Vertical");
         private readonly int _horizontalHash = Animator.StringToHash("Horizontal");

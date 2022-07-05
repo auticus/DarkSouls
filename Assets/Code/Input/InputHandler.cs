@@ -11,6 +11,7 @@ namespace DarkSouls.Input
         /// </summary>
         public Vector2 MovementInput { get; private set; }
         public bool RollButtonPressed { get; private set; }
+        public bool JumpButtonPressed { get; private set; }
         public bool InteractButtonPressed { get; private set; }
         public bool AttackButtonPressed { get; private set; }
         public bool HeavyAttackButtonPressed { get; private set; }
@@ -21,6 +22,11 @@ namespace DarkSouls.Input
         /// Fires when the Roll button is invoked.
         /// </summary>
         public event Action OnInputRoll;
+
+        /// <summary>
+        /// Fires when the Jump button is invoked.
+        /// </summary>
+        public event Action OnInputJump;
 
         /// <summary>
         /// Fires when the Interaction button is invoked.
@@ -75,6 +81,9 @@ namespace DarkSouls.Input
         {
             //Cinemachine is handling all of these, we just put this in here to make the interface happy
         }
+
+        public void OnJump(InputAction.CallbackContext context)
+            => ProcessInputEvent(context, value => JumpButtonPressed = value, ref OnInputJump);
 
         public void OnRoll(InputAction.CallbackContext context)
             => ProcessInputEvent(context, value => RollButtonPressed = value, ref OnInputRoll);
