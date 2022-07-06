@@ -1,4 +1,5 @@
 ﻿using DarkSouls.Characters;
+using DarkSouls.Input;
 using DarkSouls.Inventory;
 using UnityEngine;
 
@@ -12,16 +13,21 @@ namespace DarkSouls.UI
         private StatusBar _healthBar;
         private StatusBar _staminaBar;
         private QuickSlots _quickSlots;
+
+        private WindowsUI _windowsUIController;
+
         private CharacterAttributes _characterAttributes;
         private WeaponSocketController _weaponSocketController;
+        private InputHandler _inputHandler;
 
         private void Awake()
         {
             _characterAttributes = GetComponent<CharacterAttributes>();
-        }
+            _inputHandler = GetComponent<InputHandler>();
+            _quickSlots = FindObjectOfType<QuickSlots>();
+            _windowsUIController = FindObjectOfType<WindowsUI>();
+            _weaponSocketController = GetComponent<WeaponSocketController>();
 
-        private void Start()
-        {
             var statusBars = FindObjectsOfType<StatusBar>();
 
             // status bars will reside on a canvas object outside of the player hierarchy.
@@ -42,9 +48,10 @@ namespace DarkSouls.UI
 
                 Debug.LogWarning($"UIController receives a status bar of type {statusBar.StatusBarType} that has no known UI Element associated with it.");
             }
+        }
 
-            _quickSlots = FindObjectOfType<QuickSlots>(); //same comment for healthbar.
-
+        private void Start()
+        {
             _characterAttributes.OnCharacterHealthChanged += OnCharacterHealthChanged;
             _characterAttributes.OnCharacterStaminaChanged += OnCharacterStaminaChanged;
             SetHealthBarMaximum(_characterAttributes.MaximumHealth);
@@ -52,9 +59,10 @@ namespace DarkSouls.UI
             SetStaminaBarMaximum(_characterAttributes.MaximumStamina);
             SetStaminaBarValue(_characterAttributes.CurrentStamina);
 
-            _weaponSocketController = GetComponent<WeaponSocketController>();
             _weaponSocketController.OnRightHandWeaponChanged += WeaponSocketController_OnRightHandWeaponChanged;
             _weaponSocketController.OnLeftHandWeaponChanged += WeaponSocketController_OnLeftHandWeaponChanged;
+
+            _inputHandler.OnInputStartMenu += InputHandler_StartMenuPressed;
         }
 
         #region Health
@@ -120,6 +128,14 @@ namespace DarkSouls.UI
         {
             _quickSlots.UpdateLeftHandSlotIcon(weapon);
         }
+        #endregion
+
+        #region UI Panels
+        private void InputHandler_StartMenuPressed()
+        {
+            _windowsUIController.ToggleStartMenu();
+        }
+
         #endregion
     }
 }

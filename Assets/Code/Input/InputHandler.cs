@@ -17,6 +17,7 @@ namespace DarkSouls.Input
         public bool HeavyAttackButtonPressed { get; private set; }
         public bool RightHandCyclePressed { get; private set; }
         public bool LeftHandCyclePressed { get; private set; }
+        public bool StartMenuPressed { get; private set; }
 
         /// <summary>
         /// Fires when the Roll button is invoked.
@@ -52,6 +53,11 @@ namespace DarkSouls.Input
         /// Fires when the left hand cycle button is pressed.
         /// </summary>
         public event Action OnInputCycleLeftHand;
+
+        /// <summary>
+        /// Fires when the start menu is pressed.
+        /// </summary>
+        public event Action OnInputStartMenu;
 
         private PlayerControls _inputActions;
         
@@ -102,6 +108,9 @@ namespace DarkSouls.Input
 
         public void OnInteract(InputAction.CallbackContext context)
             => ProcessInputEvent(context, value => InteractButtonPressed = value, ref OnInputInteraction);
+
+        public void OnStartMenu(InputAction.CallbackContext context)
+            => ProcessInputEvent(context, value => StartMenuPressed = value, ref OnInputStartMenu);
 
         private void ProcessInputEvent(InputAction.CallbackContext context, Action<bool> boolFlagProccessingDirective, ref Action eventAction)
         {

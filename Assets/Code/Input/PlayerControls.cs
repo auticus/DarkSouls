@@ -205,6 +205,15 @@ namespace DarkSouls.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Start Menu"",
+                    ""type"": ""Button"",
+                    ""id"": ""8b9c9c20-262a-4129-994f-153f4db776db"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -361,6 +370,28 @@ namespace DarkSouls.Input
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a7a16256-cc58-4743-a7a7-1cb43242c95c"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse & Keyboard"",
+                    ""action"": ""Start Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""16b38a2b-7cb7-4dfb-848f-54f33716160e"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Start Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -408,6 +439,7 @@ namespace DarkSouls.Input
             m_PlayerActions_CycleRightHand = m_PlayerActions.FindAction("Cycle Right Hand", throwIfNotFound: true);
             m_PlayerActions_CycleLeftHand = m_PlayerActions.FindAction("Cycle Left Hand", throwIfNotFound: true);
             m_PlayerActions_Interact = m_PlayerActions.FindAction("Interact", throwIfNotFound: true);
+            m_PlayerActions_StartMenu = m_PlayerActions.FindAction("Start Menu", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -515,6 +547,7 @@ namespace DarkSouls.Input
         private readonly InputAction m_PlayerActions_CycleRightHand;
         private readonly InputAction m_PlayerActions_CycleLeftHand;
         private readonly InputAction m_PlayerActions_Interact;
+        private readonly InputAction m_PlayerActions_StartMenu;
         public struct PlayerActionsActions
         {
             private @PlayerControls m_Wrapper;
@@ -526,6 +559,7 @@ namespace DarkSouls.Input
             public InputAction @CycleRightHand => m_Wrapper.m_PlayerActions_CycleRightHand;
             public InputAction @CycleLeftHand => m_Wrapper.m_PlayerActions_CycleLeftHand;
             public InputAction @Interact => m_Wrapper.m_PlayerActions_Interact;
+            public InputAction @StartMenu => m_Wrapper.m_PlayerActions_StartMenu;
             public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -556,6 +590,9 @@ namespace DarkSouls.Input
                     @Interact.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnInteract;
                     @Interact.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnInteract;
                     @Interact.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnInteract;
+                    @StartMenu.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnStartMenu;
+                    @StartMenu.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnStartMenu;
+                    @StartMenu.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnStartMenu;
                 }
                 m_Wrapper.m_PlayerActionsActionsCallbackInterface = instance;
                 if (instance != null)
@@ -581,6 +618,9 @@ namespace DarkSouls.Input
                     @Interact.started += instance.OnInteract;
                     @Interact.performed += instance.OnInteract;
                     @Interact.canceled += instance.OnInteract;
+                    @StartMenu.started += instance.OnStartMenu;
+                    @StartMenu.performed += instance.OnStartMenu;
+                    @StartMenu.canceled += instance.OnStartMenu;
                 }
             }
         }
@@ -617,6 +657,7 @@ namespace DarkSouls.Input
             void OnCycleRightHand(InputAction.CallbackContext context);
             void OnCycleLeftHand(InputAction.CallbackContext context);
             void OnInteract(InputAction.CallbackContext context);
+            void OnStartMenu(InputAction.CallbackContext context);
         }
     }
 }
