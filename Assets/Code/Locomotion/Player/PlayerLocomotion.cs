@@ -20,6 +20,7 @@ namespace DarkSouls.Locomotion.Player
         private Rigidbody _rigidBody;
 
         private float _rollButtonPressedTime;
+        private float _jumpingHorizontalForce;
         private Vector3 _interactionDirection;
         private Vector3 _moveDirection;
 
@@ -70,21 +71,28 @@ namespace DarkSouls.Locomotion.Player
             //indicating the movement AND animation logic all need to happen in the same Update or LateUpdate
             _moveDirection = GetXZMoveDirectionFromInput();
             HandleRollingAndSprinting(deltaTime);
+            HandleJumping();
             HandleMovement();
             HandleFreeLookAnimations();
             HandleRotation(deltaTime);
 
             //this is also what keeps the character model up and not sunk in because of the collider being up above the knees
-            _gravityLocomotion.HandleFalling(
-                deltaTime, 
-                fallingSpeed, 
-                groundDetectionRayOffset, 
-                groundDetectionRayStartPoint,
-                minDistanceNeededToBeginFallAnimation, 
-                _moveDirection, 
-                movementSpeed, 
-                GetTotalNormalizedMovement(_inputHandler.MovementInput),
-                _playerController);
+            // if the player is in the middle of a jump (exerting upward force) do not apply gravity until that is finished.
+            // this does "defy gravity" a little bit but feels pretty good in the game.  Otherwise with gravity on he doesn't jump as high.
+            // alternatively could boost the jump power to add more upwards force but not needed at the moment.
+            if (!_playerController.State.IsJumping)
+            {
+                _gravityLocomotion.HandleFalling(
+                    deltaTime,
+                    fallingSpeed,
+                    groundDetectionRayOffset,
+                    groundDetectionRayStartPoint,
+                    minDistanceNeededToBeginFallAnimation,
+                    _moveDirection,
+                    movementSpeed,
+                    GetTotalNormalizedMovement(_inputHandler.MovementInput),
+                    _playerController);
+            }
         }
 
         /// <summary>
@@ -145,6 +153,9 @@ namespace DarkSouls.Locomotion.Player
             return moveDirection;
         }
 
+        /// <summary>
+        /// Event handler that responds to the roll / sprint button being pressed.
+        /// </summary>
         private void InputHandler_Roll()
         {
             //When the Roll button is pressed it will either Roll or if no direction was given it will back step the player
@@ -164,31 +175,69 @@ namespace DarkSouls.Locomotion.Player
             }
         }
 
+        /// <summary>
+        /// Event handler that responds to the jump button being pressed.
+        /// </summary>
         private void InputHandler_Jump()
         {
             if (_playerController.State.IsInteracting) return;
             var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
-            var jumpDirection = GetXZMoveDirectionFromInput();
+            _interactionDirection = GetXZMoveDirectionFromInput();
 
-            // rotate to face the direction you are moving, otherwise if not moving just jump up in place.
-            if (totalMovement > 0)
-            {
-                _animationHandler.PlayTargetAnimation(AnimationHandler.ONE_HANDED_RUN_JUMP, isInteractingAnimation: true);
-                var jumpRotation = Quaternion.LookRotation(jumpDirection);
-                _playerTransform.rotation = jumpRotation;
-            }
-            else
-            {
-                _animationHandler.PlayTargetAnimation(AnimationHandler.ONE_HANDED_JUMP_IN_PLACE, isInteractingAnimation: true);
-            }
+            InitiateJump(totalMovement);
 
             // set state and clean up
             _playerController.State.IsJumping = true;
             _playerController.OnInteractingAnimationCompleteDoThis = () =>
             {
+                // full attempt at this would be to have animator send an IsJumping false impulse when the animation reached the top of its height 
+                // but for now, just let the force be applied to the whole thing and end it when the animator completes full-stop.
                 _playerController.State.IsJumping = false;
                 _animationHandler.FinishInteractionAnimation();
             };
+        }
+
+        private void InitiateJump(float totalMovement)
+        {
+            // rotate to face the direction you are moving, otherwise if not moving just jump up in place.
+            if (totalMovement > 0)
+            {
+                _animationHandler.PlayTargetAnimation(AnimationHandler.ONE_HANDED_RUN_JUMP, isInteractingAnimation: true);
+                var jumpRotation = Quaternion.LookRotation(_interactionDirection);
+                _playerTransform.rotation = jumpRotation;
+
+                _jumpingHorizontalForce = _playerController.State.IsSprinting ? sprintSpeed : movementSpeed;
+            }
+            else
+            {
+                _animationHandler.PlayTargetAnimation(AnimationHandler.ONE_HANDED_JUMP_IN_PLACE, isInteractingAnimation: true);
+                _jumpingHorizontalForce = 0f;
+            }
+        }
+
+        private void HandleJumping()
+        {
+            // when jumping the animation has already been triggered by the button press
+            // this function is to apply force to the character while they are jumping
+            // _interactionDirection is the direction that the player was moving when the jump was initiated.  They are already facing that direction
+
+            if (!_playerController.State.IsJumping) return;
+
+            // apply upward force
+            _rigidBody.AddForce(_playerTransform.up * _playerAttributes.Strength);
+
+            // if the player was moving at the time, apply horizontal force\
+            // horizontalForce is their move or sprint speed.  
+            _rigidBody.AddForce(_interactionDirection * (_jumpingHorizontalForce + _playerAttributes.Strength));
+        }
+
+        private void HandleRoll()
+        {
+            _animationHandler.PlayTargetAnimation(AnimationHandler.ROLLING_ANIMATION, isInteractingAnimation: true);
+            var rollRotation = Quaternion.LookRotation(_interactionDirection);
+            _playerTransform.rotation = rollRotation;
+            _playerController.State.IsRolling = true;
+            _playerController.OnInteractingAnimationCompleteDoThis = FinishRolling;
         }
 
         private void HandleBackstep()
@@ -203,8 +252,8 @@ namespace DarkSouls.Locomotion.Player
 
         private void DecideToRollOrSprint(float deltaTime)
         {
-            if (_playerController.State.IsRolling || _playerController.State.IsSprinting) return;
             if (!_playerController.State.RollButtonInvoked) return;
+            if (_playerController.State.IsRolling || _playerController.State.IsSprinting) return;
 
             //at this point the roll button had been invoked so we are just waiting to decide to roll or sprint
             if (_inputHandler.RollButtonPressed)
@@ -221,16 +270,7 @@ namespace DarkSouls.Locomotion.Player
 
             // no longer pressed, but we didn't trigger a sprint - so roll
             // the interaction direction will have been set when the button was initially pressed
-            HandleRoll(_interactionDirection);
-        }
-
-        private void HandleRoll(Vector3 moveDirection)
-        {
-            _animationHandler.PlayTargetAnimation(AnimationHandler.ROLLING_ANIMATION, isInteractingAnimation: true);
-            var rollRotation = Quaternion.LookRotation(moveDirection);
-            _playerTransform.rotation = rollRotation;
-            _playerController.State.IsRolling = true;
-            _playerController.OnInteractingAnimationCompleteDoThis = FinishRolling;
+            HandleRoll();
         }
 
         private void DecideToEndSprint()

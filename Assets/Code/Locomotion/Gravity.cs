@@ -41,10 +41,6 @@ namespace DarkSouls.Locomotion
              * Something about this method is also responsible for keeping the character above the ground as the collider is currently above its knees
              */
             //Initialization and prep the origin of the ray
-
-            // if the player is in the middle of a jump (exerting upward force) do not apply gravity until that is finished.
-            if (playerController.State.IsJumping) return;
-
             var origin = _characterTransform.position;
             origin.y += groundDetectionRayStartPoint;
 
