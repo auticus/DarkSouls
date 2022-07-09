@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using DarkSouls.Inventory;
-using UnityEditor;
 using UnityEngine;
 
 namespace DarkSouls.UI
@@ -36,15 +34,16 @@ namespace DarkSouls.UI
 
             foreach (var item in inventory)
             {
+                var type = item.ConvertItemToType();
                 if (index < _containerSlots.Count)
                 {
-                    _containerSlots[index].PopulateSlot(item);
+                    _containerSlots[index].PopulateSlot(item, type);
                 }
                 else
                 {
                     var newSlotGameObject = Instantiate(InventorySlotPrefab, gameObject.transform);
                     var newSlot = newSlotGameObject.GetComponent<InventorySlot>();
-                    newSlot.PopulateSlot(item);
+                    newSlot.PopulateSlot(item, type);
                     _containerSlots.Add(newSlot);
                 }
 

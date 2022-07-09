@@ -10,7 +10,8 @@ namespace DarkSouls.UI
     public class InventorySlot : MonoBehaviour
     {
         /// <summary>
-        /// Gets or sets the Icon of the control that this script is bound to.  Drag over from the editor.
+        /// Gets or sets the Image of the control that this script is bound to.  Drag the image from the control over onto this via the editor.
+        /// This will get set with the image of the item that populates the control.
         /// </summary>
         [field: SerializeField]
         public Image Icon { get; set; }
@@ -22,21 +23,29 @@ namespace DarkSouls.UI
         public Item InventoryItem { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of inventory this represents.
+        /// </summary>
+        [field: SerializeField]
+        public InventoryType Type { get; set; }
+
+        /// <summary>
         /// Populates the slot with the data and type required.
         /// </summary>
         /// <param name="item"></param>
-        public void PopulateSlot(Item item)
+        /// /// <param name="type"></param>
+        public virtual void PopulateSlot(Item item, InventoryType type)
         {
             Icon.sprite = item.Icon;
             Icon.enabled = true;
             InventoryItem = item;
+            Type = type;
             gameObject.SetActive(true);
         }
 
         /// <summary>
         /// Clears the slot of all data and disables the item.
         /// </summary>
-        public void ClearSlot()
+        public virtual void ClearSlot()
         {
             Icon.sprite = null;
             Icon.enabled = false;

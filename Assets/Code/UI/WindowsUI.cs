@@ -12,7 +12,8 @@ namespace DarkSouls.UI
         private bool _inventoryVisible;
 
         private CharacterInventory _characterInventory;
-        private InventorySlotContainer _weaponsContainer;
+        private InventorySlotContainer _weaponsInventoryContainer;
+        private EquipmentSlotContainer _equipmentContainer;
         private CharacterDoll _characterDoll;
 
         [SerializeField] private GameObject Hud;
@@ -37,7 +38,8 @@ namespace DarkSouls.UI
                 _characterInventory = _playerCharacter.GetComponent<CharacterInventory>();
             }
 
-            _weaponsContainer = WeaponsInventoryContainer.GetComponent<InventorySlotContainer>();
+            _weaponsInventoryContainer = WeaponsInventoryContainer.GetComponent<InventorySlotContainer>();
+            _equipmentContainer = EquipmentPanel.GetComponent<EquipmentSlotContainer>();
             _characterDoll = CharacterDollContainer.GetComponent<CharacterDoll>();
         }
 
@@ -95,10 +97,10 @@ namespace DarkSouls.UI
         /// <summary>
         /// Refreshes all inventory panels with the current inventory passed.
         /// </summary>
-        /// <param name="weapons">A list of all of the weapons in the player inventory.</param>
         public void RefreshInventory()
         {
-            _weaponsContainer.RefreshContainer(_characterInventory.Weapons);
+            _weaponsInventoryContainer.RefreshContainer(_characterInventory.Weapons);
+            _equipmentContainer.RefreshEquipmentSlots(_characterInventory);
         }
     }
 }
