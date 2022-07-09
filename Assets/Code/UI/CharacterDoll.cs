@@ -14,11 +14,12 @@ namespace DarkSouls.UI
     public class CharacterDoll : MonoBehaviour
     {
         private int _characterDollLayer;
-
+        
         private void Awake()
         {
             _characterDollLayer = LayerMask.NameToLayer("Character Doll");
         }
+
         /// <summary>
         /// Adds the character and deactivates all scripts on it.
         /// </summary>
@@ -27,6 +28,8 @@ namespace DarkSouls.UI
             var doll = Instantiate(character, parent: this.transform);
             doll.tag = "Doll";
             doll.SetLayer(_characterDollLayer, includeChildren: true, includeInactive: false);
+            doll.transform.position = transform.position;
+            doll.transform.rotation = transform.rotation;
 
             var rigidBody = doll.GetComponent<Rigidbody>();
             var capsule = doll.GetComponent<CapsuleCollider>();
