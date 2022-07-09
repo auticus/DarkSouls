@@ -74,13 +74,8 @@ public class PlayerController : MonoBehaviour
 
     void LateUpdate()
     {
-        /*
-         * Note in tutorial he sets all of the input handler flags explicitly to false but we let the input handler handle that and fire events accordingly
-         */
-
         if (State.IsAerial)
         {
-            //deviation: he has in air timer on the PlayerLocomotion component but I moved it here because locomotion doesn't care how long its in the air
             State.AerialTimer += Time.deltaTime;
         }
     }

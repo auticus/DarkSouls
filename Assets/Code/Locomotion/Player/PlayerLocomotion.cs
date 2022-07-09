@@ -62,20 +62,43 @@ namespace DarkSouls.Locomotion.Player
             _playerController.State.IsGrounded = true;
         }
 
-        void Update()
+        private void Update()
         {
             var deltaTime = Time.deltaTime;
-
-            //INTERESTING
-            //Physics movement is supposed to be put into LateUpdate.  However LateUpdate will not move the character if they are animating
-            //indicating the movement AND animation logic all need to happen in the same Update or LateUpdate
             _moveDirection = GetXZMoveDirectionFromInput();
+
             HandleRollingAndSprinting(deltaTime);
+            HandleFreeLookAnimations();
+        }
+
+        private void FixedUpdate()
+        {
+            //Fixed Update deals with physics or movement.  Physics engine runs on same interval as FixedUpdate.
+            //anywhere you are applying force should be here.
+            var deltaTime = Time.fixedDeltaTime;
+
             HandleJumping();
             HandleMovement();
-            HandleFreeLookAnimations();
             HandleRotation(deltaTime);
+            HandleGravity(deltaTime);
+        }
 
+        /// <summary>
+        /// Stops the movement of the character.
+        /// </summary>
+        public void StopCharacterMovement()
+        {
+            _rigidBody.velocity = Vector3.zero;
+        }
+
+        private void HandleRollingAndSprinting(float deltaTime)
+        {
+            DecideToRollOrSprint(deltaTime);
+            DecideToEndSprint();
+        }
+
+        private void HandleGravity(float deltaTime)
+        {
             //this is also what keeps the character model up and not sunk in because of the collider being up above the knees
             // if the player is in the middle of a jump (exerting upward force) do not apply gravity until that is finished.
             // this does "defy gravity" a little bit but feels pretty good in the game.  Otherwise with gravity on he doesn't jump as high.
@@ -93,20 +116,6 @@ namespace DarkSouls.Locomotion.Player
                     GetTotalNormalizedMovement(_inputHandler.MovementInput),
                     _playerController);
             }
-        }
-
-        /// <summary>
-        /// Stops the movement of the character.
-        /// </summary>
-        public void StopCharacterMovement()
-        {
-            _rigidBody.velocity = Vector3.zero;
-        }
-
-        private void HandleRollingAndSprinting(float deltaTime)
-        {
-            DecideToRollOrSprint(deltaTime);
-            DecideToEndSprint();
         }
 
         private void HandleMovement()
@@ -224,11 +233,11 @@ namespace DarkSouls.Locomotion.Player
             if (!_playerController.State.IsJumping) return;
 
             // apply upward force
-            _rigidBody.AddForce(_playerTransform.up * _playerAttributes.Strength);
+            _rigidBody.AddForce(_playerTransform.up * _playerAttributes.Strength * 1000);
 
             // if the player was moving at the time, apply horizontal force\
             // horizontalForce is their move or sprint speed.  
-            _rigidBody.AddForce(_interactionDirection * (_jumpingHorizontalForce + _playerAttributes.Strength));
+            _rigidBody.AddForce(_interactionDirection * (_jumpingHorizontalForce + _playerAttributes.Strength) * 1000);
         }
 
         private void HandleRoll()
