@@ -73,6 +73,9 @@ namespace DarkSouls.Input
 
         private void OnDestroy()
         {
+            // there are instances of the player rig that are instantiated for like character doll that wont have this registered
+            // the script is just along for the ride because its part of the prefab.
+            if (_inputActions == null) return;
             _inputActions.PlayerActions.Disable();
             _inputActions.PlayerMovement.Disable();
         }

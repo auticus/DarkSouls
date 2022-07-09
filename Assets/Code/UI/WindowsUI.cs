@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DarkSouls.Inventory;
+﻿using DarkSouls.Inventory;
 using UnityEngine;
 
 namespace DarkSouls.UI
@@ -17,16 +13,41 @@ namespace DarkSouls.UI
 
         private CharacterInventory _characterInventory;
         private InventorySlotContainer _weaponsContainer;
+        private CharacterDoll _characterDoll;
 
         [SerializeField] private GameObject Hud;
         [SerializeField] private GameObject StartMenu;
         [SerializeField] private GameObject InventoryPanel;
+        [SerializeField] private GameObject EquipmentPanel;
         [SerializeField] private GameObject WeaponsInventoryContainer;
+        [SerializeField] private GameObject CharacterDollContainer;
+        
+        private GameObject _playerCharacter; //used for paper dolling
 
         private void Awake()
         {
+            var characters = GameObject.FindGameObjectsWithTag("Player"); //there should only ever be one of these and this has all the scripts loaded on it
+            if (characters == null || characters.Length > 1)
+            {
+                Debug.LogWarning("The player character was either not found or there is more than one game object in the scene with the tag Player.");
+            }
+            else
+            {
+                _playerCharacter = characters[0];
+                _characterInventory = _playerCharacter.GetComponent<CharacterInventory>();
+            }
+
             _weaponsContainer = WeaponsInventoryContainer.GetComponent<InventorySlotContainer>();
-            _characterInventory = FindObjectOfType<CharacterInventory>();
+            _characterDoll = CharacterDollContainer.GetComponent<CharacterDoll>();
+        }
+
+        private void Start()
+        {
+            if (Hud == null || StartMenu == null || InventoryPanel == null || EquipmentPanel == null ||
+                WeaponsInventoryContainer == null || CharacterDollContainer == null)
+            {
+                Debug.LogWarning("WindowsUI was not wired up fully - there are components that are null.");
+            }
         }
 
         /// <summary>
@@ -53,27 +74,24 @@ namespace DarkSouls.UI
             if (_startMenuVisible) ToggleStartMenu();
 
             _inventoryVisible = !_inventoryVisible;
+            
             InventoryPanel.SetActive(_inventoryVisible);
+            EquipmentPanel.SetActive(_inventoryVisible);
             
             if (_inventoryVisible)
             {
                 RefreshInventory();
+                _characterDoll.AddCharacterAndScrubScripts(_playerCharacter);
                 Hud.SetActive(false);
             }
             else
             {
+                _characterDoll.RemoveCharacter();
                 Hud.SetActive(true);
             }
-        }
 
-        /// <summary>
-        /// Called by editor OnClick to toggle Equipment.
-        /// </summary>
-        public void ToggleEquipmentPanel()
-        {
-            //todo
         }
-
+        
         /// <summary>
         /// Refreshes all inventory panels with the current inventory passed.
         /// </summary>
