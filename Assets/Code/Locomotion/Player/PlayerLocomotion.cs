@@ -64,21 +64,21 @@ namespace DarkSouls.Locomotion.Player
 
         private void Update()
         {
-            var deltaTime = Time.deltaTime;
             _moveDirection = GetXZMoveDirectionFromInput();
-
-            HandleRollingAndSprinting(deltaTime);
-            HandleFreeLookAnimations();
         }
 
         private void FixedUpdate()
         {
             //Fixed Update deals with physics or movement.  Physics engine runs on same interval as FixedUpdate.
             //anywhere you are applying force should be here.
+
+            //advice given: use update for user input, visual effects, and interpolation between states.  Use FixedUpdate for everything else.
             var deltaTime = Time.fixedDeltaTime;
 
             HandleJumping();
             HandleMovement();
+            HandleRollingAndSprinting(deltaTime);
+            HandleFreeLookAnimations();
             HandleRotation(deltaTime);
             HandleGravity(deltaTime);
         }
@@ -229,15 +229,16 @@ namespace DarkSouls.Locomotion.Player
             // when jumping the animation has already been triggered by the button press
             // this function is to apply force to the character while they are jumping
             // _interactionDirection is the direction that the player was moving when the jump was initiated.  They are already facing that direction
-
+            
+            const int jumpingModifier = 10; //needed to boost the value of the force to see any noticeable difference.
             if (!_playerController.State.IsJumping) return;
 
             // apply upward force
-            _rigidBody.AddForce(_playerTransform.up * _playerAttributes.Strength * 1000);
+            _rigidBody.AddForce(_playerTransform.up * _playerAttributes.Strength * jumpingModifier);
 
             // if the player was moving at the time, apply horizontal force\
             // horizontalForce is their move or sprint speed.  
-            _rigidBody.AddForce(_interactionDirection * (_jumpingHorizontalForce + _playerAttributes.Strength) * 1000);
+            _rigidBody.AddForce(_interactionDirection * (_jumpingHorizontalForce + _playerAttributes.Strength * jumpingModifier));
         }
 
         private void HandleRoll()
