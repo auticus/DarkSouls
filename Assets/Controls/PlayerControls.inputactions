@@ -190,6 +190,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Targeting",
+                    "type": "Button",
+                    "id": "92b2e1dc-42f0-41a7-926d-1e4e14688c63",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -217,17 +226,6 @@
                 },
                 {
                     "name": "",
-                    "id": "2b8712e2-584c-4b6a-adab-75cfe3386a98",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Mouse & Keyboard",
-                    "action": "Attack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "b1ae85c5-c28c-4c60-9022-1007a778e783",
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
@@ -239,12 +237,12 @@
                 },
                 {
                     "name": "",
-                    "id": "0f131daf-a1f1-485b-b60b-0bc9593d42b5",
-                    "path": "<Keyboard>/r",
+                    "id": "5d815fde-fdc3-49b1-ab13-7a0c306fc755",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse & Keyboard",
-                    "action": "Heavy Attack",
+                    "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -255,6 +253,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
+                    "action": "Heavy Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "27510fd4-fd37-42d0-bbc8-d4d3053b6491",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse & Keyboard",
                     "action": "Heavy Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -366,6 +375,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Start Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1c88d589-a9b5-4586-b924-69955afd3991",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse & Keyboard",
+                    "action": "Targeting",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ec3b387e-e9ba-48db-aca3-9054f9bce9f2",
+                    "path": "<Gamepad>/rightStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Targeting",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

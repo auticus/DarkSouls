@@ -37,6 +37,9 @@ namespace DarkSouls.Locomotion.Player
         [SerializeField][Tooltip("Offset point front of player/back of player from where the raycast should begin")] private float groundDetectionRayOffset = 0f;
         [SerializeField][Tooltip("What the distance is before the falling animation should play")] private float minDistanceNeededToBeginFallAnimation = 1f;
 
+        [Header("Movement Modifiers")] 
+        [SerializeField] private float jumpingModifier = 10f; //needed to boost the value of the force to see any noticeable difference.
+
         void Awake()
         {
             _playerController = GetComponent<PlayerController>();
@@ -229,10 +232,8 @@ namespace DarkSouls.Locomotion.Player
             // when jumping the animation has already been triggered by the button press
             // this function is to apply force to the character while they are jumping
             // _interactionDirection is the direction that the player was moving when the jump was initiated.  They are already facing that direction
-            
-            const int jumpingModifier = 10; //needed to boost the value of the force to see any noticeable difference.
             if (!_playerController.State.IsJumping) return;
-
+            
             // apply upward force
             _rigidBody.AddForce(_playerTransform.up * _playerAttributes.Strength * jumpingModifier);
 

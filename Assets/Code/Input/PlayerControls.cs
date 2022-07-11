@@ -214,6 +214,15 @@ namespace DarkSouls.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Targeting"",
+                    ""type"": ""Button"",
+                    ""id"": ""92b2e1dc-42f0-41a7-926d-1e4e14688c63"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -241,17 +250,6 @@ namespace DarkSouls.Input
                 },
                 {
                     ""name"": """",
-                    ""id"": ""2b8712e2-584c-4b6a-adab-75cfe3386a98"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Mouse & Keyboard"",
-                    ""action"": ""Attack"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""b1ae85c5-c28c-4c60-9022-1007a778e783"",
                     ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
@@ -263,12 +261,12 @@ namespace DarkSouls.Input
                 },
                 {
                     ""name"": """",
-                    ""id"": ""0f131daf-a1f1-485b-b60b-0bc9593d42b5"",
-                    ""path"": ""<Keyboard>/r"",
+                    ""id"": ""5d815fde-fdc3-49b1-ab13-7a0c306fc755"",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse & Keyboard"",
-                    ""action"": ""Heavy Attack"",
+                    ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -279,6 +277,17 @@ namespace DarkSouls.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
+                    ""action"": ""Heavy Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""27510fd4-fd37-42d0-bbc8-d4d3053b6491"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse & Keyboard"",
                     ""action"": ""Heavy Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -392,6 +401,28 @@ namespace DarkSouls.Input
                     ""action"": ""Start Menu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1c88d589-a9b5-4586-b924-69955afd3991"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Mouse & Keyboard"",
+                    ""action"": ""Targeting"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ec3b387e-e9ba-48db-aca3-9054f9bce9f2"",
+                    ""path"": ""<Gamepad>/rightStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Targeting"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -440,6 +471,7 @@ namespace DarkSouls.Input
             m_PlayerActions_CycleLeftHand = m_PlayerActions.FindAction("Cycle Left Hand", throwIfNotFound: true);
             m_PlayerActions_Interact = m_PlayerActions.FindAction("Interact", throwIfNotFound: true);
             m_PlayerActions_StartMenu = m_PlayerActions.FindAction("Start Menu", throwIfNotFound: true);
+            m_PlayerActions_Targeting = m_PlayerActions.FindAction("Targeting", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -548,6 +580,7 @@ namespace DarkSouls.Input
         private readonly InputAction m_PlayerActions_CycleLeftHand;
         private readonly InputAction m_PlayerActions_Interact;
         private readonly InputAction m_PlayerActions_StartMenu;
+        private readonly InputAction m_PlayerActions_Targeting;
         public struct PlayerActionsActions
         {
             private @PlayerControls m_Wrapper;
@@ -560,6 +593,7 @@ namespace DarkSouls.Input
             public InputAction @CycleLeftHand => m_Wrapper.m_PlayerActions_CycleLeftHand;
             public InputAction @Interact => m_Wrapper.m_PlayerActions_Interact;
             public InputAction @StartMenu => m_Wrapper.m_PlayerActions_StartMenu;
+            public InputAction @Targeting => m_Wrapper.m_PlayerActions_Targeting;
             public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -593,6 +627,9 @@ namespace DarkSouls.Input
                     @StartMenu.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnStartMenu;
                     @StartMenu.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnStartMenu;
                     @StartMenu.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnStartMenu;
+                    @Targeting.started -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnTargeting;
+                    @Targeting.performed -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnTargeting;
+                    @Targeting.canceled -= m_Wrapper.m_PlayerActionsActionsCallbackInterface.OnTargeting;
                 }
                 m_Wrapper.m_PlayerActionsActionsCallbackInterface = instance;
                 if (instance != null)
@@ -621,6 +658,9 @@ namespace DarkSouls.Input
                     @StartMenu.started += instance.OnStartMenu;
                     @StartMenu.performed += instance.OnStartMenu;
                     @StartMenu.canceled += instance.OnStartMenu;
+                    @Targeting.started += instance.OnTargeting;
+                    @Targeting.performed += instance.OnTargeting;
+                    @Targeting.canceled += instance.OnTargeting;
                 }
             }
         }
@@ -658,6 +698,7 @@ namespace DarkSouls.Input
             void OnCycleLeftHand(InputAction.CallbackContext context);
             void OnInteract(InputAction.CallbackContext context);
             void OnStartMenu(InputAction.CallbackContext context);
+            void OnTargeting(InputAction.CallbackContext context);
         }
     }
 }
