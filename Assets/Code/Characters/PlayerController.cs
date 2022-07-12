@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using DarkSouls.Animation;
 using DarkSouls.Characters;
 using DarkSouls.Combat;
@@ -20,14 +21,9 @@ public class PlayerController : MonoBehaviour
     private InputHandler _inputHandler; //optional - only players will have this
     private PopUpUI _popupUI; //optional - only players should have this so do not let NPC controllers snag a reference.
     private WeaponSocketController _weaponSocketController;
-    
-    private Interactable _interactableInRange;
 
-    /// <summary>
-    /// Gets the Character's Eyes which let the character know what it sees.
-    /// </summary>
-    [field: SerializeField]
-    public Eyes CharacterEyes { get; private set; }
+    // Senses
+    private InteractableEyes _interactableEyes;
 
     /// <summary>
     /// Gets a value indicating that the controller belongs to a player.
@@ -52,8 +48,9 @@ public class PlayerController : MonoBehaviour
         _characterInventory = GetComponent<CharacterInventory>();
         _weaponSocketController = GetComponent<WeaponSocketController>();
         
-        CharacterEyes = new Eyes(this);
-
+        //child objects
+        _interactableEyes = GetComponentInChildren<InteractableEyes>();
+        
         IsPlayerCharacter = gameObject.CompareTag("Player");
     }
 
@@ -105,10 +102,13 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerOnlyUpdate()
     {
-        _interactableInRange = CharacterEyes.ScanAreaInFrontOfMeForInteractable();
-        if (_interactableInRange != null)
+        if (_interactableEyes.Interactables.Any())
         {
-            _popupUI.ShowPopUpText(string.IsNullOrEmpty(_interactableInRange.InteractionText) ? "## UNDEFINED ##" : _interactableInRange.InteractionText);
+            var interactableText = _interactableEyes.Interactables.First().InteractionText;
+            // todo: Implement issue #11 - multiple interactables
+            _popupUI.ShowPopUpText(string.IsNullOrEmpty(interactableText)
+                ? "## UNDEFINED ##"
+                : interactableText);
         }
         else //make sure popup is not active
         {
@@ -257,8 +257,10 @@ public class PlayerController : MonoBehaviour
         }
 
         // if an interactable is in range, interact with it
-        if (_interactableInRange == Eyes.NO_INTERACTABLE_FOUND) return;
-        _interactableInRange.Interact(this);
-        _interactableInRange = Eyes.NO_INTERACTABLE_FOUND;
+        // todo: implement issue #11 - multiple interactables
+        if (!_interactableEyes.Interactables.Any()) return;
+        var interactable = _interactableEyes.Interactables.First();
+        interactable.Interact(this);
+        _interactableEyes.RemoveTarget(interactable);
     }
 }
