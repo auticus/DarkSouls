@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
 
     // Senses
     private InteractableEyes _interactableEyes;
+    private TargetingEyes _targetingEyes;
 
     /// <summary>
     /// Gets a value indicating that the controller belongs to a player.
@@ -50,6 +51,7 @@ public class PlayerController : MonoBehaviour
         
         //child objects
         _interactableEyes = GetComponentInChildren<InteractableEyes>();
+        _targetingEyes = GetComponentInChildren<TargetingEyes>();
         
         IsPlayerCharacter = gameObject.CompareTag("Player");
     }
@@ -95,6 +97,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             _inputHandler.OnInputInteraction += InputHandler_InteractionButtonInvoked;
+            _inputHandler.OnInputTargeting += InputHandler_TargetingButtonInvoked;
         }
         
         _popupUI = FindObjectOfType<PopUpUI>(); //only should be one of these in the scene and only a player should care about it
@@ -262,5 +265,20 @@ public class PlayerController : MonoBehaviour
         var interactable = _interactableEyes.Interactables.First();
         interactable.Interact(this);
         _interactableEyes.RemoveTarget(interactable);
+    }
+
+    private void InputHandler_TargetingButtonInvoked()
+    {
+        if (_targetingEyes.CurrentTarget != null)
+        {
+            Debug.Log("Clearing Target");
+            _targetingEyes.ClearTarget();
+            return;
+        }
+
+        if (_targetingEyes.TrySelectClosestTarget())
+        {
+            Debug.Log($"Targeting {_targetingEyes.CurrentTarget.name}");
+        }
     }
 }

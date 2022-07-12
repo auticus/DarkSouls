@@ -16,14 +16,10 @@ namespace DarkSouls.Characters
         /// </summary>
         [field: SerializeField] public List<Interactable> Interactables { get; set; } = new();
 
-        private PlayerController _controller;
-        private Camera _mainCamera;
         private SphereCollider _sphereCollider;
         
         private void Awake()
         {
-            _controller = GetComponent<PlayerController>();
-            _mainCamera = Camera.main;
             _sphereCollider = GetComponent<SphereCollider>();
         }
 
@@ -45,6 +41,7 @@ namespace DarkSouls.Characters
 
         private void OnDrawGizmosSelected()
         {
+            if (transform == null || _sphereCollider == null) return;
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, _sphereCollider.radius);
         }

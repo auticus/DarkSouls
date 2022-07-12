@@ -1,4 +1,4 @@
-﻿using DarkSouls.Characters;
+﻿using System;
 using UnityEngine;
 
 namespace DarkSouls.Combat
@@ -8,11 +8,17 @@ namespace DarkSouls.Combat
     /// </summary>
     public class Target : MonoBehaviour
     {
+        public event Action<Target> OnDestroyed;
         private PlayerController _character;
 
         private void Start()
         {
             _character = GetComponent<PlayerController>();
+        }
+
+        private void OnDestroy()
+        {
+            OnDestroyed?.Invoke(this);
         }
 
         public void HitTarget(int damage)

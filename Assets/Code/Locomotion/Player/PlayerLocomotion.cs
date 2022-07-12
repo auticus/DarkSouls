@@ -14,6 +14,7 @@ namespace DarkSouls.Locomotion.Player
         private readonly float _rollButtonPressBeforeSprintInvoked = 0.5f;
         
         private PlayerController _playerController;
+        private TargetingEyes _targetingEyes;
         private CharacterAttributes _playerAttributes; 
         private AnimationHandler _animationHandler;
         private Transform _playerTransform;
@@ -30,6 +31,8 @@ namespace DarkSouls.Locomotion.Player
         [SerializeField][Tooltip("How fast the player falls")] private float fallingSpeed = 60; //todo: this is not realistic having a constant fall rate
         [SerializeField] [Tooltip("How fast the player moves")] private float movementSpeed = 5;
         [SerializeField][Tooltip("How fast the player sprints")] private float sprintSpeed = 8;
+        [SerializeField][Tooltip("How fast the player moves when targeting")] private float targetingMovementSpeed = 5;
+        [SerializeField][Tooltip("How fast the player sprints when targeting")] private float targetingSprintingMovementSpeed = 8;
         [SerializeField] [Tooltip("How quickly the player can rotate")] private float rotationSpeed = 10; //souls is very fast rotation
 
         [Header("Ground & Air Detection Stats")]
@@ -40,6 +43,26 @@ namespace DarkSouls.Locomotion.Player
         [Header("Movement Modifiers")] 
         [SerializeField] private float jumpingModifier = 10f; //needed to boost the value of the force to see any noticeable difference.
 
+        /// <summary>
+        /// Gets the current speed of the character based on a number of variables.
+        /// </summary>
+        private float CurrentSpeed
+        {
+            get
+            {
+                if (_targetingEyes.CurrentTarget != null)
+                {
+                    return _playerController.State.IsSprinting
+                        ? targetingSprintingMovementSpeed
+                        : targetingMovementSpeed;
+                }
+
+                return _playerController.State.IsSprinting
+                    ? sprintSpeed
+                    : movementSpeed;
+            }
+        }
+
         void Awake()
         {
             _playerController = GetComponent<PlayerController>();
@@ -47,6 +70,8 @@ namespace DarkSouls.Locomotion.Player
             _animationHandler = GetComponent<AnimationHandler>();
             _playerAttributes = GetComponent<CharacterAttributes>();
             _inputHandler = GetComponent<InputHandler>(); // not optional - this is a player's locomotion
+
+            _targetingEyes = GetComponentInChildren<TargetingEyes>();
         }
 
         void Start()
@@ -81,7 +106,7 @@ namespace DarkSouls.Locomotion.Player
             HandleJumping();
             HandleMovement();
             HandleRollingAndSprinting(deltaTime);
-            HandleFreeLookAnimations();
+            HandleLocomotionAnimations(deltaTime);
             HandleRotation(deltaTime);
             HandleGravity(deltaTime);
         }
@@ -125,20 +150,47 @@ namespace DarkSouls.Locomotion.Player
         {
             if (_playerController.State.IsInteracting || _playerController.State.IsRolling || _playerController.State.IsJumping) return;
 
-            var velocity = _moveDirection * (_playerController.State.IsSprinting ? sprintSpeed : movementSpeed);
+            var velocity = _moveDirection * CurrentSpeed;
             _rigidBody.velocity = Vector3.ProjectOnPlane(velocity, Vector3.zero);
         }
 
-        private void HandleFreeLookAnimations()
+        private void HandleLocomotionAnimations(float deltaTime)
         {
-            var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
-            _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _playerController.State.IsSprinting);
+            if (_targetingEyes.CurrentTarget != null)
+            {
+                if (_animationHandler.CurrentLocomotionState != LocomotionStates.Targeting)
+                {
+                    _animationHandler.TransitionLocomotionState(LocomotionStates.Targeting);
+                }
+
+                GetNormalizedMovement(_inputHandler.MovementInput, out var x, out var y);
+                _animationHandler.UpdateTargetingMovementAnimation(x, y, _playerController.State.IsSprinting, deltaTime);
+            }
+            else
+            {
+                if (_animationHandler.CurrentLocomotionState != LocomotionStates.FreeLook)
+                {
+                    _animationHandler.TransitionLocomotionState(LocomotionStates.FreeLook);
+                }
+
+                var totalMovement = GetTotalNormalizedMovement(_inputHandler.MovementInput);
+                _animationHandler.UpdateFreelookMovementAnimation(totalMovement, _playerController.State.IsSprinting, deltaTime);
+            }
         }
 
         private void HandleRotation(float deltaTime)
         {
+            // if in targeting state, face the target and return
+            if (_targetingEyes.CurrentTarget != null)
+            {
+                FaceTarget(_targetingEyes.CurrentTarget.transform);
+                return;
+            }
+
+            // if unable to rotate, we're done here
             if (!_playerController.State.CanRotate) return;
 
+            // rotate the character
             var targetVector = Vector3.zero;
 
             targetVector = _mainCamera.forward * _inputHandler.MovementInput.y;
@@ -153,6 +205,21 @@ namespace DarkSouls.Locomotion.Player
             var targetRotation = Quaternion.Slerp(_playerTransform.rotation, desiredRotation, rotationSpeed * deltaTime);
 
             _playerTransform.rotation = targetRotation;
+        }
+
+        private void FaceTarget(Transform target)
+        {
+            var facing = GetVectorXZToTarget(target);
+            if (facing == Vector3.zero) return;
+            _playerTransform.rotation = Quaternion.LookRotation(facing);
+        }
+
+        private Vector3 GetVectorXZToTarget(Transform target)
+        {
+            if (target == null) return Vector3.zero;
+            var facing = target.position - _playerTransform.position;
+            facing.y = 0; //don't care about height differences
+            return facing;
         }
 
         private Vector3 GetXZMoveDirectionFromInput()
@@ -218,7 +285,7 @@ namespace DarkSouls.Locomotion.Player
                 var jumpRotation = Quaternion.LookRotation(_interactionDirection);
                 _playerTransform.rotation = jumpRotation;
 
-                _jumpingHorizontalForce = _playerController.State.IsSprinting ? sprintSpeed : movementSpeed;
+                _jumpingHorizontalForce = CurrentSpeed;
             }
             else
             {
@@ -254,7 +321,9 @@ namespace DarkSouls.Locomotion.Player
         private void HandleBackstep()
         {
             var moveDirection = _mainCamera.forward * -1;
-            //_rigidBody.velocity = moveDirection * movementSpeed;
+            
+            // animation - add force instead of just slapping velocity on it.
+            // this should use movement speed regardless of if targeting or not.
             _rigidBody.AddForce(moveDirection * movementSpeed, ForceMode.Acceleration);
             _animationHandler.PlayTargetAnimation(AnimationHandler.BACKSTEP_ANIMATION, isInteractingAnimation: true);
             _playerController.State.IsBackStepping = true;
@@ -318,6 +387,12 @@ namespace DarkSouls.Locomotion.Player
             var horizontal = Mathf.Abs(GetNormalizedMovement(movementInput.x));
 
             return Mathf.Clamp01(vertical + horizontal);
+        }
+
+        private static void GetNormalizedMovement(Vector2 movementInput, out float x, out float y)
+        {
+            x = Mathf.Clamp01(Mathf.Abs(GetNormalizedMovement(movementInput.x)));
+            y = Mathf.Clamp01(Mathf.Abs(GetNormalizedMovement(movementInput.y)));
         }
 
         private static float GetNormalizedMovement(float movement)
