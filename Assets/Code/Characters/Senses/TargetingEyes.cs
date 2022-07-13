@@ -42,6 +42,7 @@ namespace DarkSouls.Characters
             _mainCamera = Camera.main;
 
             Physics.IgnoreLayerCollision(PLAYER_EYES_LAYER, CONTROLLER_LAYER);
+            gameObject.layer = PLAYER_EYES_LAYER;
 
             if (targetingGroup == null)
             {
@@ -157,16 +158,20 @@ namespace DarkSouls.Characters
         }
 
         private bool CanEyesSeeCurrentTarget()
+            => CanEyesSeeGivenTarget(CurrentTarget.gameObject.transform);
+
+        private bool CanEyesSeeGivenTarget(Transform target)
         {
             // targeting mode should always be facing the target but environment can get in the way and block line of sight
             // this method will see if we can still draw a line to that target
-            if (Physics.Linecast(transform.position, CurrentTarget.transform.position, out var hitInfo))
+            // layermask - 1 << ENVIRONMENT_LAYER means only collide with environment markers. 
+            // an or may look like (1 << 9) | (1 << 10); which means hit everything on those two layers
+            // or ~((1 << 9) | (1 << 10)) means hit everything but those two layers
+            if (Physics.Linecast(_mainCamera.transform.position, target.position, out var hitInfo, 1 << ENVIRONMENT_LAYER))
             {
-                Debug.DrawLine(transform.position, CurrentTarget.transform.position, Color.red);
-                if (hitInfo.transform.gameObject.layer == ENVIRONMENT_LAYER)
-                {
-                    return false;
-                }
+                // looking to see if any environmental blockers are between us and our target
+                Debug.DrawLine(_mainCamera.transform.position, target.position, Color.green);
+                return false;
             }
 
             return true;

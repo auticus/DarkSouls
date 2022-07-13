@@ -16,11 +16,13 @@ namespace DarkSouls.Characters
         /// </summary>
         [field: SerializeField] public List<Interactable> Interactables { get; set; } = new();
 
+        private const int PLAYER_EYES_LAYER = 9;
         private SphereCollider _sphereCollider;
         
         private void Awake()
         {
             _sphereCollider = GetComponent<SphereCollider>();
+            gameObject.layer = PLAYER_EYES_LAYER;
         }
 
         private void OnTriggerEnter(Collider other)
