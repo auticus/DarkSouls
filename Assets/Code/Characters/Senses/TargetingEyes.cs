@@ -29,6 +29,7 @@ namespace DarkSouls.Characters
         private const float DEFAULT_TARGETING_CAMERA_RADIUS = 2f;
         private const int CONTROLLER_LAYER = 10;
         private const int PLAYER_EYES_LAYER = 9;
+        private const int ENVIRONMENT_LAYER = 8;
 
         private Camera _mainCamera;
         private SphereCollider _sphereCollider;
@@ -45,6 +46,16 @@ namespace DarkSouls.Characters
             if (targetingGroup == null)
             {
                 Debug.LogWarning("Targeting Eyes component does not have its TargetingGroup component set on the player character.");
+            }
+        }
+
+        private void Update()
+        {
+            if (CurrentTarget == null) return;
+            if (!CanEyesSeeCurrentTarget())
+            {
+                Debug.Log("Can no longer see my target so clearing...");
+                ClearTarget();
             }
         }
 
@@ -143,6 +154,22 @@ namespace DarkSouls.Characters
             var xDistanceFromCenter = Math.Abs(targetViewPosition.x - CENTER_SCREEN);
             var yDistanceFromCenter = Math.Abs(targetViewPosition.y - CENTER_SCREEN);
             return new Vector2(xDistanceFromCenter, yDistanceFromCenter);
+        }
+
+        private bool CanEyesSeeCurrentTarget()
+        {
+            // targeting mode should always be facing the target but environment can get in the way and block line of sight
+            // this method will see if we can still draw a line to that target
+            if (Physics.Linecast(transform.position, CurrentTarget.transform.position, out var hitInfo))
+            {
+                Debug.DrawLine(transform.position, CurrentTarget.transform.position, Color.red);
+                if (hitInfo.transform.gameObject.layer == ENVIRONMENT_LAYER)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

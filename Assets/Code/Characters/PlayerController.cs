@@ -7,7 +7,6 @@ using DarkSouls.Input;
 using DarkSouls.Inventory;
 using DarkSouls.UI;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Centralized class that is responsible for bridging the gap between game components and the character.

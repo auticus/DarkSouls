@@ -1,8 +1,6 @@
 ﻿using DarkSouls.Animation;
-using DarkSouls.Characters;
 using DarkSouls.Input;
 using DarkSouls.Inventory;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace DarkSouls.Combat

@@ -90,19 +90,13 @@ namespace DarkSouls.Locomotion.Player
             _playerController.State.IsGrounded = true;
         }
 
-        private void Update()
-        {
-            _moveDirection = GetXZMoveDirectionFromInput();
-        }
-
         private void FixedUpdate()
         {
             //Fixed Update deals with physics or movement.  Physics engine runs on same interval as FixedUpdate.
             //anywhere you are applying force should be here.
 
-            //advice given: use update for user input, visual effects, and interpolation between states.  Use FixedUpdate for everything else.
             var deltaTime = Time.fixedDeltaTime;
-
+            _moveDirection = GetXZMoveDirectionFromInput();
             HandleJumping();
             HandleMovement();
             HandleRollingAndSprinting(deltaTime);
